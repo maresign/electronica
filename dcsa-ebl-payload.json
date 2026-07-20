@@ -1,0 +1,32 @@
+{
+  "documentStatus": "ISSUED",
+  "transportDocumentReference": "MSC-IST-2026-001",
+  "issueDate": "2026-07-20T10:00:00Z",
+  "carrierCode": "MSCU",
+  "vesselName": "MSC GULSUN",
+  "voyageNumber": "2607-W",
+  "portOfLoading": {
+    "locationName": "Yarimca, Kocaeli",
+    "UNLocationCode": "TRKOC"
+  },
+  "portOfDischarge": {
+    "locationName": "Rotterdam",
+    "UNLocationCode": "NLRTM"
+  },
+  "shipper": {
+    "partyName": "Anatolian Export A.S.",
+    "taxReference": "TR1234567890"
+  },
+  "consignee": {
+    "partyName": "EuroLogistics B.V.",
+    "taxReference": "NL0987654321"
+  },
+  "cargoItems": [
+    {
+      "equipmentReference": "MSCU1234567",
+      "descriptionOfGoods": "Automotive Spare Parts",
+      "grossWeight": 14500.0,
+      "grossWeightUnit": "KGM"
+    }
+  ]
+}

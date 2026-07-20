@@ -1,0 +1,24 @@
+name: Maresign Azure Otomasyonu
+
+on:
+  push:
+    branches:
+      - main # Eğer GitHub'da ana dalınız master ise burayı master yapın
+
+jobs:
+  deploy-to-azure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Kodu İndir (Checkout)
+        uses: actions/checkout@v3
+
+      - name: 🚀 Azure Kapsayıcısına ($web) Yükle
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload \
+              --container-name \$web \
+              --file index.html \
+              --name index.html \
+              --connection-string "${{ secrets.AZURE_CONNECTION_STRING }}" \
+              --overwrite

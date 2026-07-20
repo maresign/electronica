@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maresign - Ultimate Trade & Trust Gateway</title>
+    <style>
+        :root {
+            --primary: #0A2540; --secondary: #00A3E0; --bg-light: #F4F7F9; 
+            --success: #2ED47A; --danger: #E25950; --warning: #F5B041; --text-dark: #2A3B4C;
+        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; display: flex; background: var(--bg-light); color: var(--text-dark); overflow-x: hidden; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--primary); color: white; height: 100vh; position: fixed; padding-top: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.1); z-index: 10;}
+        .sidebar h2 { text-align: center; margin-bottom: 30px; font-weight: 800; letter-spacing: 1px; }
+        .sidebar h2 span { color: var(--secondary); }
+        .menu-label { font-size: 11px; color: #6B7C93; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 5px 25px; font-weight: bold;}
+        .menu-item { padding: 12px 25px; margin: 2px 15px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: 500; font-size: 13px;}
+        .menu-item:hover, .menu-item.active { background: var(--secondary); color: white; }
+
+        /* Main Content */
+        .main { margin-left: 260px; padding: 40px; width: 100%; box-sizing: border-box; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #E6EBF1; padding-bottom: 20px; }
+        .header-actions { display: flex; gap: 15px; align-items: center; }
+        .user-badge { background: white; padding: 8px 15px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 10px; font-weight: bold; border: 2px solid #E6EBF1; transition: 0.3s; }
+        .user-badge:hover { border-color: var(--secondary); }
+        .kyc-dot { width: 10px; height: 10px; background: var(--success); border-radius: 50%; display: inline-block; box-shadow: 0 0 8px var(--success);}
+        .role-selector { border: none; outline: none; font-weight: bold; color: var(--primary); background: transparent; cursor: pointer; font-size: 14px; padding: 5px; }
+
+        /* Views */
+        .view-section { display: none; animation: fadeIn 0.4s ease; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Tables & Cards */
+        .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; margin-bottom: 30px;}
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 16px 20px; border-bottom: 1px solid #E6EBF1; vertical-align: middle; }
+        th { background: #F8FAFC; color: #6B7C93; font-weight: 600; font-size: 12px; text-transform: uppercase; }
+        tr:hover { background: #F8FAFC; }
+        
+        .tag { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block; }
+        .tag-owner { background: #D1F2EB; color: #117A65; border: 1px solid #2ED47A; font-size: 13px;}
+        .tag-transferred { background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1;}
+        .tag-qes { background: #E3F2FD; color: #0277BD; border: 1px solid #03A9F4; }
+        .tag-paper { background: #FDEDEC; color: #C0392B; border: 1px solid #E25950;}
+
+        /* Buttons */
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 5px;}
+        .btn-blue { background: var(--secondary); color: white; }
+        .btn-blue:hover { background: #008CBE; transform: translateY(-1px); }
+        .btn-outline { background: transparent; border: 1px solid #D3DAE6; color: #6B7C93; }
+        .btn-outline:hover { border-color: var(--secondary); color: var(--secondary); }
+        .btn-red-outline { background: transparent; border: 1px solid #E25950; color: #E25950; }
+        .btn-red-outline:hover { background: #E25950; color: white; }
+        .btn-green { background: var(--success); color: white; }
+        .btn-purple { background: #8E44AD; color: white; }
+
+        /* Template Grid */
+        .doc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .doc-card { background: white; border: 1px solid #E6EBF1; border-radius: 10px; padding: 20px; text-align: center; transition: 0.3s; }
+        .doc-card:hover { border-color: var(--secondary); box-shadow: 0 10px 20px rgba(0,163,224,0.1); transform: translateY(-3px); }
+        .doc-icon { font-size: 35px; margin-bottom: 10px; display: block; }
+
+        /* KYC Panel */
+        .kyc-panel { display: flex; gap: 30px; }
+        .kyc-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); flex: 1; border-top: 4px solid var(--secondary);}
+        .cert-info { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #E6EBF1; font-size: 14px;}
+        .cert-info:last-child { border: none; }
+        .cert-info span:first-child { color: #6B7C93; font-weight: 500; }
+        .cert-info span:last-child { font-weight: 700; color: var(--primary); text-align: right;}
+
+        /* MODALS */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 37, 64, 0.85); backdrop-filter: blur(5px); align-items: center; justify-content: center; z-index: 1000; }
+        .modal-box { background: white; padding: 40px; border-radius: 16px; width: 550px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto;}
+        
+        .progress-wrapper { width: 100%; background: #E6EBF1; border-radius: 10px; height: 8px; margin-bottom: 20px; overflow: hidden; }
+        .progress-bar { width: 0%; height: 100%; background: var(--secondary); transition: width 0.3s ease; box-shadow: 0 0 10px var(--secondary); }
+        .log-box { background: #0F172A; color: #38BDF8; padding: 20px; border-radius: 8px; font-family: 'Courier New', Courier, monospace; font-size: 13px; text-align: left; height: 180px; overflow-y: auto; margin-bottom: 15px; line-height: 1.5;}
+        
+        /* Document Preview Template */
+        .doc-preview { background: #fff; border: 1px solid #ccc; padding: 30px; margin-bottom: 20px; font-family: 'Times New Roman', serif; color: #111; box-shadow: 0 5px 15px rgba(0,0,0,0.1); font-size: 13px;}
+        .doc-preview h1 { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; font-size: 18px; text-transform: uppercase;}
+        .doc-preview table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .doc-preview td { border: 1px solid #999; padding: 8px; vertical-align: top; }
+        .doc-preview .header-row { background: #f4f4f4; font-weight: bold; }
+
+        /* IoT Tracking Panel */
+        .iot-panel { background: #0A192F; border-radius: 12px; padding: 20px; color: #64FFDA; font-family: monospace; }
+        .iot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .iot-stat { background: rgba(100,255,218,0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(100,255,218,0.2); }
+        .blinking-dot { width: 10px; height: 10px; background: #64FFDA; border-radius: 50%; display: inline-block; animation: blink 1.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* QR Scanner */
+        .qr-scanner { width: 200px; height: 200px; border: 4px solid var(--primary); margin: 0 auto 20px; position: relative; border-radius: 10px; overflow: hidden; background: #f8f9fa;}
+        .qr-laser { width: 100%; height: 4px; background: var(--success); position: absolute; box-shadow: 0 0 10px var(--success); animation: scan 2s infinite linear; }
+        @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+        
+        select.target-select { padding: 8px; border: 1px solid #D3DAE6; border-radius: 6px; font-size: 12px; outline: none; background: #F8FAFC; cursor: pointer; font-weight: 600; color: var(--primary);}
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2>Mare<span>sign</span></h2>
+        
+        <div class="menu-label">Mülkiyet & Finans (MLETR)</div>
+        <div class="menu-item active" onclick="switchTab('vault', this)">🚢 eBL Kasası (Vault)</div>
+        <div class="menu-item" onclick="switchTab('network', this)">🔗 Zilyetlik Devir Ağı</div>
+        <div class="menu-item" onclick="switchTab('paper', this)">🖨️ ETDA Kağıt Arşivi</div>
+        
+        <div class="menu-label">Liman & Operasyon (DCSA)</div>
+        <div class="menu-item" onclick="switchTab('dataroom', this)">📁 Ortak Belge Alanı</div>
+        <div class="menu-item" onclick="switchTab('templates', this)">📝 Belge Üret & Yükle</div>
+        
+        <div class="menu-label">Sistem & Güvenlik</div>
+        <div class="menu-item" onclick="switchTab('kyc', this)">⚙️ ArkSigner KYB Profili</div>
+    </div>
+
+    <div class="main">
+        <div class="header">
+            <div>
+                <h1 style="margin: 0; color: var(--primary);">Denizcilik Finans & Operasyon Ekosistemi</h1>
+                <p style="margin: 5px 0 0 0; color: #6B7C93; font-weight:600;">IG P&I, UNCITRAL MLETR ve UK ETDA 2023 Uyumlu Zero-Trust Altyapı</p>
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn btn-outline" style="border-color:var(--primary); color:var(--primary);" onclick="openQRModal()">🔍 Açık Doğrulama (Gümrük)</button>
+                <div class="user-badge">
+                    <span class="kyc-dot"></span>
+                    <select class="role-selector" id="account-switcher" onchange="changeAccount(this.value)">
+                        <option value="shipper">Maresign Exporters Ltd. (Yükleyici)</option>
+                        <option value="carrier">MSC Ocean Taşıma (Kaptan)</option>
+                        <option value="agent">Liman Gümrük Acentesi (Acente)</option>
+                        <option value="bank">Global Bank PLC (Banka)</option>
+                        <option value="receiver">Global Imports LLC (Alıcı)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 1: eBL VAULT ================= -->
+        <div id="view-vault" class="view-section active">
+            <h2 style="color: var(--primary); margin-top: 0; border-left: 5px solid var(--secondary); padding-left: 15px;">Münhasır Kontrolünüzdeki (Exclusive Control) Belgeler</h2>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Zilyetlik (Possession)</th><th>eBL No & Standart</th><th>Yük, Rota & IoT</th><th>İşlem (Devir / İptal / Finans)</th></tr></thead>
+                    <tbody id="ebl-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: NETWORK (LEDGER) ================= -->
+        <div id="view-network" class="view-section">
+            <h2 style="color: var(--primary);">🔗 Zilyetlik Ağı & Immutable Denetim İzi</h2>
+            <p style="color: #6B7C93;">Çifte Harcamayı (Double-Spending) önlemek için tüm işlemler Azure WORM Ledger'da kilitlenir.</p>
+            <div class="table-container">
+                <table id="ledger-table">
+                    <thead><tr><th>İşlem (Tx Hash)</th><th>Zaman Damgası</th><th>Belge</th><th>Aksiyon</th><th>Ağ Hareketi</th></tr></thead>
+                    <tbody id="ledger-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: PAPER ARCHIVE ================= -->
+        <div id="view-paper" class="view-section">
+            <h2 style="color: var(--primary);">🖨️ ETDA Kağıt Arşivi (Switch-to-Paper)</h2>
+            <p style="color: #6B7C93;">Dijital ikizi yasal olarak yok edilip (Burn) fiziksel kağıda dönüştürülen konşimentolar.</p>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>eBL Numarası</th><th>İptal Tarihi</th><th>Yasal Durum</th><th>Fiziksel Nüsha</th></tr></thead>
+                    <tbody id="paper-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= TAB 4: DATA ROOM ================= -->
+        <div id="view-dataroom" class="view-section">
+            <h2 style="color: var(--primary);">📁 Ortak Belge Alanı (Shared Data Room)</h2>
+            <p style="color: #6B7C93;">Sevkiyata ait ticari belgeler ArkSigner e-Mühürlü olarak burada yer alır.</p>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Belge Adı</th><th>Yükleyen Kurum</th><th>Tarih</th><th>Güvenlik</th><th>Aksiyon</th></tr></thead>
+                    <tbody id="dataroom-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= TAB 5: TEMPLATES ================= -->
+        <div id="view-templates" class="view-section">
+            <h2 style="color: var(--primary);">📝 Belge Üret & Yükle</h2>
+            <div class="doc-grid">
+                <div class="doc-card"><span class="doc-icon">📜</span><div class="doc-title">Elektronik Konşimento</div><div class="doc-desc">DCSA Formatında eBL.</div><button class="btn btn-blue" style="width:100%" onclick="openDocumentTemplate('eBL')">Oluştur</button></div>
+                <div class="doc-card"><span class="doc-icon">📦</span><div class="doc-title">Kargo Manifestosu</div><div class="doc-desc">Gümrük kargo beyanı.</div><button class="btn btn-blue" style="width:100%" onclick="openDocumentTemplate('Manifest')">Oluştur</button></div>
+                <div class="doc-card"><span class="doc-icon">🌍</span><div class="doc-title">Menşe Şahadetnamesi (CoO)</div><div class="doc-desc">İhracat menşe onayı.</div><button class="btn btn-blue" style="width:100%" onclick="openDocumentTemplate('CoO')">Oluştur</button></div>
+                <div class="doc-card"><span class="doc-icon">⚓</span><div class="doc-title">Mate's Receipt</div><div class="doc-desc">Kaptan teslim makbuzu.</div><button class="btn btn-blue" style="width:100%" onclick="openDocumentTemplate('MatesReceipt')">Oluştur</button></div>
+                <div class="doc-card"><span class="doc-icon">⏱️</span><div class="doc-title">Statement of Facts (SOF)</div><div class="doc-desc">Operasyon süreleri.</div><button class="btn btn-blue" style="width:100%" onclick="openDocumentTemplate('SOF')">Oluştur</button></div>
+                <div class="doc-card"><span class="doc-icon">📄</span><div class="doc-title">Commercial Invoice</div><div class="doc-desc">Ticari Fatura.</div><button class="btn btn-blue" style="width:100%" onclick="openDocumentTemplate('Invoice')">Oluştur</button></div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 6: ARKSIGNER KYB ================= -->
+        <div id="view-kyc" class="view-section">
+            <h2 style="color: var(--primary); margin-top: 0;">⚙️ ArkSigner KYB (Kurumsal Profil)</h2>
+            <p style="color: #6B7C93; margin-bottom: 30px;">İşlem yaptığınız hesabın ArkSigner (CA) tarafından onaylanmış kurumsal güvenlik detayları.</p>
+            <div class="kyc-panel">
+                <div class="kyc-card">
+                    <h3 style="color: var(--primary);">🏢 Ticari Sicil Bilgileri</h3>
+                    <div class="cert-info"><span>Kurum/Şirket Adı:</span> <span id="kyb-name"></span></div>
+                    <div class="cert-info"><span>Sistem Rolü:</span> <span id="kyb-role"></span></div>
+                    <div class="cert-info"><span>Mersis / Vergi No:</span> <span id="kyb-mersis"></span></div>
+                    <div class="cert-info"><span>Kurumsal Doğrulama:</span> <span style="color:var(--success);">✅ ArkSigner (Level 3)</span></div>
+                </div>
+                <div class="kyc-card">
+                    <h3 style="color: var(--primary);">💳 Kriptografik Altyapı (CA)</h3>
+                    <div class="cert-info"><span>Sertifika Sağlayıcı:</span> <span>ArkSigner Kök Sertifika (CA)</span></div>
+                    <div class="cert-info"><span>Yetki Tipi:</span> <span>Nitelikli e-İmza & e-Mühür</span></div>
+                    <div class="cert-info"><span>Kullanılan Donanım:</span> <span id="kyb-hw"></span></div>
+                    <button class="btn btn-outline" style="width: 100%; margin-top: 15px; border-color:var(--secondary); color:var(--secondary);" onclick="alert('Kurum sertifikası geçerli. ArkSigner CA ile iletişim başarılı.')">Donanım Testi (Ping Token)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DOCUMENT TEMPLATE PREVIEW MODAL -->
+    <div class="modal" id="templateModal">
+        <div class="modal-box" style="width: 700px;">
+            <h2 style="color: var(--primary); margin-top:0;" id="template-modal-title">Belge Taslağı</h2>
+            <div class="doc-preview" id="template-content"></div>
+            <div style="display: flex; gap: 10px;" id="template-action-area">
+                <button class="btn btn-outline" style="flex:1;" id="btn-template-cancel" onclick="document.getElementById('templateModal').style.display='none'">Kapat</button>
+                <button class="btn btn-green" style="flex:2;" id="btn-template-sign" onclick="signAndShareDocument()">💳 QES ile İmzala ve Ortak Alana Gönder</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACTION / LOADING MODAL (MAKER/CHECKER/BURN/LC) -->
+    <div class="modal" id="actionModal">
+        <div class="modal-box">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h2 id="modal-title" style="color: var(--primary); margin-bottom: 5px;">Ağ Geçidi</h2>
+                <p id="modal-desc" style="color: #6B7C93; font-size: 14px; margin-top:0;">İşlem başlatılıyor...</p>
+            </div>
+            
+            <div class="progress-wrapper"><div class="progress-bar" id="progress-bar"></div></div>
+            <div class="log-box" id="modal-logs"></div>
+            
+            <div id="interactive-sign-area" style="display:none; text-align:center; margin-top:15px;">
+                <button class="btn btn-green" style="width: 100%; padding: 15px; font-size: 16px; font-weight: bold;" onclick="executeSignature()">💳 Onayla (QES / e-Mühür)</button>
+            </div>
+            <div id="smart-contract-area" style="display:none; text-align:center; margin-top:15px;">
+                <button class="btn btn-purple" style="width: 100%; padding: 15px; font-size: 16px; font-weight: bold;" onclick="executeSmartContract()">🏦 Akıllı Sözleşmeyi Tetikle (Ödemeyi Yap)</button>
+            </div>
+
+            <button class="btn btn-blue" id="close-btn" style="display: none; margin-top: 20px; width: 100%; padding: 12px;" onclick="closeActionModal()">Tamamla</button>
+        </div>
+    </div>
+
+    <!-- PUBLIC QR VERIFY MODAL -->
+    <div class="modal" id="qrModal">
+        <div class="modal-box" style="text-align: center;">
+            <h2 style="color: var(--primary);">Gümrük / Denetçi Doğrulaması</h2>
+            <p style="color: #6B7C93; font-size: 13px;">Belge üzerindeki QR kod doğrulanıyor...</p>
+            <div class="qr-scanner" id="qr-scanner-anim">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=Maresign" alt="QR" style="width:100%; opacity:0.2;">
+                <div class="qr-laser"></div>
+            </div>
+            <div id="qr-result" style="display: none; background: #F0FAF7; padding: 20px; border-radius: 10px; border: 2px solid #2ED47A;">
+                <h3 style="color: #117A65; margin-top: 0;">✅ Orijinallik & Tekillik Doğrulandı</h3>
+                <p style="margin: 5px 0; font-size: 14px;"><strong>Sistem:</strong> UK ETDA & MLETR Uyumlu Ağ</p>
+                <p style="margin: 5px 0; font-size: 14px;"><strong>Mevcut Zilyet:</strong> <span id="qr-owner"></span></p>
+                <p style="margin: 5px 0; font-size: 14px;"><strong>Güvenlik:</strong> ArkSigner QES & Azure WORM</p>
+            </div>
+            <button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('qrModal').style.display='none'">Kapat</button>
+        </div>
+    </div>
+
+    <!-- IoT TRACKING MODAL -->
+    <div class="modal" id="iotModal">
+        <div class="modal-box">
+            <h2 style="color: var(--primary); margin-bottom: 5px;">🛰️ Canlı Kargo Takibi (IoT)</h2>
+            <p style="color: #6B7C93; font-size: 13px; margin-top:0;">Fiziksel Konteyner Verileri...</p>
+            <div class="iot-panel">
+                <div style="border-bottom: 1px solid rgba(100,255,218,0.3); padding-bottom: 10px; margin-bottom: 10px;">
+                    <span class="blinking-dot"></span> Sinyal Alınıyor... | MSCU881923
+                </div>
+                <div class="iot-grid">
+                    <div class="iot-stat">📍 Konum:<br>Enlem: 36.124 N<br>Boylam: -5.342 W</div>
+                    <div class="iot-stat">🌡️ İç Sıcaklık:<br><span style="font-size: 24px; color: #FF6B6B;">-18.4 °C</span></div>
+                    <div class="iot-stat">💧 Nem Oranı:<br><span style="font-size: 24px;">%42</span></div>
+                    <div class="iot-stat">🔒 Kapı Sensörü:<br><span style="color: #2ED47A;">MÜHÜRLÜ</span></div>
+                </div>
+            </div>
+            <button class="btn btn-blue" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('iotModal').style.display='none'">Kapat</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA STRUCTURES ---
+        const kybData = {
+            'shipper': { name: 'Maresign Exporters Ltd.', role: 'Yükleyici (Shipper)', mersis: '012345678900001', hw: 'Milli Akıllı Kart v3' },
+            'carrier': { name: 'MSC Ocean Taşıma', role: 'Taşıyıcı / Kaptan', mersis: '045612378900012', hw: 'Mobil İmza (Kaptan)' },
+            'agent': { name: 'Liman Gümrük Acentesi', role: 'Gümrük / Acente', mersis: '098765432100088', hw: 'Kurumsal HSM e-Mühür' },
+            'bank': { name: 'Global Bank PLC', role: 'Banka / Finans', mersis: '011122233300099', hw: 'Banking e-Seal (Level 4)' },
+            'receiver': { name: 'Global Imports LLC', role: 'Alıcı (Receiver)', mersis: 'US-EIN-987654321', hw: 'Cross-border QES' }
+        };
+
+        let activeAccount = 'shipper';
+
+        // Base eBL database (Added pendingApproval & targetKey for Maker/Checker)
+        let eblDatabase = [
+            { id: 'row-1', no: 'MRS-2026-TR-881', type: 'DCSA v3 eBL', goods: "40' HC Konteyner", route: "Ambarlı -> Rotterdam", owner: 'shipper', status: 'active', pendingApproval: false, targetKey: '' },
+            { id: 'row-2', no: 'MRS-2026-US-102', type: 'FIATA eFBL', goods: "Çelik Rulo Dökme", route: "Houston -> İskenderun", owner: 'shipper', status: 'active', pendingApproval: false, targetKey: '' }
+        ];
+
+        let sharedDocuments = [
+            { id: 'd1', name: 'Commercial Invoice #881', type: 'Invoice', uploader: 'shipper', date: '20 Tem 2026' },
+            { id: 'd2', name: 'Packing List #881', type: 'Document', uploader: 'shipper', date: '20 Tem 2026' }
+        ];
+
+        let ledgerDatabase = [];
+
+        window.onload = () => { changeAccount('shipper'); };
+
+        function changeAccount(roleKey) {
+            activeAccount = roleKey;
+            const data = kybData[roleKey];
+            document.getElementById('kyb-name').innerText = data.name;
+            document.getElementById('kyb-role').innerText = data.role.toUpperCase();
+            document.getElementById('kyb-mersis').innerText = data.mersis;
+            document.getElementById('kyb-hw').innerText = data.hw;
+            renderAll();
+        }
+
+        function switchTab(viewName, element) {
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + viewName).classList.add('active');
+            if(viewName === 'network') renderLedger();
+        }
+
+        function renderAll() {
+            renderVaultTable();
+            renderDataRoom();
+            renderLedger();
+            renderPaper();
+        }
+
+        // --- RENDER VAULT (WITH ALL FEATURES) ---
+        function renderVaultTable() {
+            const tbody = document.getElementById('ebl-body');
+            tbody.innerHTML = '';
+            
+            eblDatabase.forEach(ebl => {
+                if (ebl.status === 'paper') return; // Hide burned docs
+
+                const isOwner = (ebl.owner === activeAccount);
+                const isBank = (activeAccount === 'bank');
+
+                let statusHtml = '';
+                if (isOwner) {
+                    if(ebl.pendingApproval) statusHtml = `<div style="font-size:14px; color:#D4AC0D; font-weight:bold;">⏳ YÖNETİCİ ONAYI</div><div style="font-size:11px;">Checker Bekleniyor</div>`;
+                    else statusHtml = `<div style="font-size:16px; color:#117A65; font-weight:900;">👑 SİZDE</div><div style="font-size:11px; color:#6B7C93;">Münhasır Kontrol</div>`;
+                } else {
+                    statusHtml = `<div style="font-size:14px; color:#475569; font-weight:bold;">${kybData[ebl.owner].name.split(' (')[0]}</div><div style="font-size:11px; color:#E25950;">Yetkiniz Yok</div>`;
+                }
+
+                let cargoHtml = `
+                    ${ebl.goods}<br>
+                    <span style="font-size:11px; color:#6B7C93;">${ebl.route}</span><br>
+                    <button class="btn btn-outline" style="padding: 4px 8px; font-size:10px; margin-top:5px;" onclick="document.getElementById('iotModal').style.display='flex'">🛰️ Canlı İzle</button>
+                `;
+
+                let actionHtml = '';
+                if (isOwner) {
+                    if (ebl.pendingApproval) {
+                        actionHtml = `<button class="btn btn-green" style="width:100%" onclick="startAction('checker', '${ebl.id}')">💳 QES Onayla (Checker)</button>`;
+                    } else {
+                        let opts = '';
+                        for (const [key, val] of Object.entries(kybData)) if (key !== activeAccount) opts += `<option value="${key}">${val.name.split(' (')[0]}</option>`;
+                        
+                        actionHtml = `
+                            <div style="display:flex; flex-direction:column; gap:5px;">
+                                <div style="display:flex; gap:5px;">
+                                    <select id="target-${ebl.id}" class="target-select" style="flex:1;">${opts}</select>
+                                    <button class="btn btn-blue" onclick="startAction('maker', '${ebl.id}')">Devret</button>
+                                </div>
+                                <button class="btn btn-red-outline" style="width:100%;" onclick="startAction('burn', '${ebl.id}')">🖨️ Kağıda Dön (Burn)</button>
+                                ${isBank ? `<button class="btn btn-purple" style="width:100%;" onclick="startAction('lc', '${ebl.id}')">🏦 L/C Ödemesi Yap</button>` : ''}
+                            </div>
+                        `;
+                    }
+                } else actionHtml = '<span style="font-size:12px; color:#6B7C93; font-weight:bold;">Sadece Görüntüleme</span>';
+
+                tbody.innerHTML += `
+                    <tr style="${isOwner && !ebl.pendingApproval ? 'background:#F0FAF7;' : (ebl.pendingApproval && isOwner ? 'background:#FEF9E7;' : '')}">
+                        <td style="border-left: ${isOwner && !ebl.pendingApproval ? '4px solid #2ED47A' : (ebl.pendingApproval && isOwner ? '4px solid #F1C40F' : '4px solid transparent')};">${statusHtml}</td>
+                        <td><strong>${ebl.no}</strong><br><span style="font-size:11px; color:#6B7C93;">${ebl.type}</span></td>
+                        <td>${cargoHtml}</td>
+                        <td>${actionHtml}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // --- RENDER DATA ROOM, LEDGER, PAPER ---
+        function renderDataRoom() {
+            const tbody = document.getElementById('dataroom-body');
+            tbody.innerHTML = '';
+            sharedDocuments.forEach(doc => {
+                tbody.innerHTML += `<tr><td><strong>${doc.name}</strong></td><td>${kybData[doc.uploader].name.split(' (')[0]}</td><td>${doc.date}</td><td><span class="tag tag-qes">✅ ArkSigner Mühürlü</span></td><td><button class="btn btn-outline" onclick="viewDocumentTemplate('${doc.name}')">İncele</button></td></tr>`;
+            });
+        }
+        function renderLedger() {
+            const tbody = document.getElementById('ledger-body');
+            tbody.innerHTML = '';
+            [...ledgerDatabase].reverse().forEach(log => {
+                let tagClass = log.type === 'Kağıda Dön (Burn)' ? 'background:#FFEBEE; color:#D32F2F;' : 'background:#E6EBF1; color:#2A3B4C;';
+                tbody.innerHTML += `<tr><td style="font-family:monospace; font-size:11px; color:var(--secondary);">${log.tx}</td><td style="font-size:11px;">${log.date}</td><td><strong>${log.no}</strong></td><td><span class="tag" style="${tagClass}">${log.type}</span></td><td style="font-size:11px;">${log.msg}</td></tr>`;
+            });
+        }
+        function renderPaper() {
+            const tbody = document.getElementById('paper-body');
+            tbody.innerHTML = '';
+            const burnedDocs = eblDatabase.filter(e => e.status === 'paper');
+            if(burnedDocs.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#6B7C93;">Henüz kağıda dökülmüş belge yok.</td></tr>'; return; }
+            burnedDocs.forEach(ebl => {
+                tbody.innerHTML += `<tr><td><strong>${ebl.no}</strong></td><td style="font-size:12px;">${ebl.burnDate}</td><td><span class="tag tag-paper">Dijital İkizi Yok Edildi</span></td><td><button class="btn btn-outline" style="border-color:var(--primary); color:var(--primary);" onclick="printPDF('${ebl.no}')">🖨️ Yazdır (PDF)</button></td></tr>`;
+            });
+        }
+
+        // --- TEMPLATES ENGINE ---
+        let currentDraftType = '';
+        function getTemplateHTML(type, isViewMode = false) {
+            const today = new Date().toLocaleDateString();
+            const company = kybData[activeAccount].name;
+            let content = '';
+            if (type === 'eBL') content = `<h1>Draft Bill of Lading</h1><p style="text-align:right"><strong>Date:</strong> ${today}</p><table><tr><td colspan="2"><strong>Shipper:</strong><br>Maresign Exporters Ltd.</td><td colspan="2"><strong>Consignee:</strong><br>To Order</td></tr><tr class="header-row"><td colspan="4">Cargo Information</td></tr><tr><td colspan="4" style="height:80px;">1x 40' HC Container. Port of Loading: Ambarlı</td></tr></table>`;
+            else if (type === 'Manifest') content = `<h1>Cargo Manifest</h1><p><strong>Carrier:</strong> ${company}</p><table><tr class="header-row"><td>Container No</td><td>Seal No</td><td>Weight (KG)</td></tr><tr><td>MSCU881923</td><td>TR-98124</td><td>14,500</td></tr></table>`;
+            else if (type === 'Invoice') content = `<h1>Commercial Invoice</h1><p><strong>From:</strong> Maresign Exporters Ltd.<br><strong>To:</strong> Global Imports LLC</p><table><tr class="header-row"><td>Description</td><td>Total</td></tr><tr><td>Machinery Parts</td><td>$2,500,000</td></tr></table>`;
+            else content = `<h1>${type}</h1><p>Document content generated securely.</p>`; 
+            if(isViewMode) content += `<div style="margin-top:20px; color:#117A65; border-top:1px dashed #ccc; padding-top:10px;"><strong>ArkSigner Doğrulaması:</strong> Bu belge kriptografik e-Mühür ile korunmaktadır. Değiştirilemez.</div>`;
+            return content;
+        }
+
+        function openDocumentTemplate(docType) {
+            currentDraftType = docType;
+            document.getElementById('template-modal-title').innerText = "Belge Taslağı: " + docType;
+            document.getElementById('template-content').innerHTML = getTemplateHTML(docType, false);
+            document.getElementById('template-action-area').style.display = 'flex';
+            document.getElementById('btn-template-sign').style.display = 'block';
+            document.getElementById('btn-template-cancel').innerText = 'İptal';
+            document.getElementById('templateModal').style.display = 'flex';
+        }
+        function viewDocumentTemplate(docName) {
+            document.getElementById('template-modal-title').innerText = "Belge Görüntüleyici";
+            document.getElementById('template-content').innerHTML = getTemplateHTML(docName, true);
+            document.getElementById('template-action-area').style.display = 'flex';
+            document.getElementById('btn-template-sign').style.display = 'none';
+            document.getElementById('btn-template-cancel').innerText = 'Kapat';
+            document.getElementById('templateModal').style.display = 'flex';
+        }
+
+        // --- PDF PRINTING (UK ETDA & IG P&I) ---
+        function printPDF(eblNo) {
+            const pdfWindow = window.open('', '_blank');
+            pdfWindow.document.write(`
+                <html><head><title>Bill of Lading - ${eblNo}</title><style>body { font-family: 'Times New Roman', serif; padding: 40px; color: #111; } .paper-container { border: 8px double #333; padding: 40px; max-width: 800px; margin: 0 auto; position: relative; } .watermark { position: absolute; top: 30%; left: 10%; font-size: 80px; color: rgba(200,0,0,0.1); transform: rotate(-45deg); font-weight: bold; pointer-events: none; } h1 { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; } table { width: 100%; border-collapse: collapse; margin-top: 20px; } td { border: 1px solid #666; padding: 15px; vertical-align: top; } .header-row { background: #f4f4f4; font-weight: bold; }</style></head>
+                <body><div class="paper-container"><div class="watermark">ORIGINAL PAPER</div><h1>NEGOTIABLE BILL OF LADING</h1><p style="text-align: right;"><strong>B/L No:</strong> ${eblNo}</p>
+                <table><tr><td colspan="2"><strong>Shipper:</strong><br>Maresign Exporters Ltd.</td><td colspan="2"><strong>Consignee:</strong><br>To Order</td></tr><tr class="header-row"><td colspan="4">Cargo Information</td></tr><tr><td colspan="4" style="height: 100px;">1x 40' HC Container. Machinery parts.</td></tr></table>
+                <div style="margin-top: 40px; border-top: 1px solid #333; padding-top: 20px;"><p><strong>LEGAL NOTICE:</strong> This document was legally converted from an electronic record under the UNCITRAL MLETR and UK ETDA 2023. The original digital twin has been cryptographically burned. IG P&I Club standards applied.</p><p><strong>Authorized Signature:</strong> <em>ArkSigner Validation</em></p></div></div>
+                <script>setTimeout(() => { window.print(); }, 500);<\/script></body></html>
+            `);
+            pdfWindow.document.close();
+        }
+
+        // --- UNIFIED ACTION LOGIC ---
+        let simType = '';
+        let targetId = '';
+        let signPromiseResolver = null;
+
+        function signAndShareDocument() {
+            document.getElementById('templateModal').style.display = 'none';
+            startAction('generate', currentDraftType);
+        }
+
+        function openQRModal() {
+            document.getElementById('qrModal').style.display = 'flex';
+            document.getElementById('qr-scanner-anim').style.display = 'block';
+            document.getElementById('qr-result').style.display = 'none';
+            document.getElementById('qr-owner').innerText = kybData[eblDatabase[0].owner].name.split(' (')[0];
+            setTimeout(() => { document.getElementById('qr-scanner-anim').style.display = 'none'; document.getElementById('qr-result').style.display = 'block'; }, 2000);
+        }
+
+        function startAction(action, dataId) {
+            simType = action;
+            targetId = dataId;
+            const modal = document.getElementById('actionModal');
+            document.getElementById('interactive-sign-area').style.display = 'none';
+            document.getElementById('smart-contract-area').style.display = 'none';
+            document.getElementById('close-btn').style.display = 'none';
+            document.getElementById('modal-logs').innerHTML = '';
+            document.getElementById('progress-bar').style.width = '0%';
+            
+            if(action === 'maker') {
+                const ebl = eblDatabase.find(e => e.id === dataId);
+                ebl.targetKey = document.getElementById(`target-${dataId}`).value;
+                document.getElementById('modal-title').innerText = "Operasyon Hazırlığı (Maker)";
+                document.getElementById('modal-desc').innerText = "Devir taslağı (MLETR Endorsement) oluşturuluyor...";
+            } else if (action === 'checker') {
+                document.getElementById('modal-title').innerText = "Yönetici Onayı (Checker)";
+                document.getElementById('modal-desc').innerText = "Münhasır Kontrol devri için QES bekleniyor...";
+            } else if (action === 'burn') {
+                document.getElementById('modal-title').innerText = "Switch-to-Paper (ETDA 2023)";
+                document.getElementById('modal-desc').innerText = "Dijital İkiz (Digital Twin) kanunen yok edilecek...";
+            } else if (action === 'lc') {
+                document.getElementById('modal-title').innerText = "Akreditif (L/C) Otomasyonu";
+                document.getElementById('modal-desc').innerText = "Akıllı sözleşme (Smart Contract) şartları kontrol ediliyor...";
+            } else if (action === 'generate') {
+                document.getElementById('modal-title').innerText = "Belge Üretimi";
+                document.getElementById('modal-desc').innerText = `${dataId} oluşturulup Ortak Alana aktarılıyor...`;
+            }
+
+            modal.style.display = 'flex';
+            runActionSimulation();
+        }
+
+        async function runActionSimulation() {
+            const logBox = document.getElementById('modal-logs');
+            const pb = document.getElementById('progress-bar');
+            const addLog = async (txt, delay=30, clss='') => { logBox.innerHTML += `<div class="log-line ${clss}">${txt}</div>`; logBox.scrollTop = logBox.scrollHeight; await new Promise(r => setTimeout(r, delay)); };
+
+            if (simType === 'maker') {
+                pb.style.width = '50%';
+                await addLog("> Operasyon uzmanı devir belgesini hazırladı...");
+                await addLog("> Sistem kontrolü başarılı. Yönetici (Checker) onayı bekleniyor.", 10, 'log-warning');
+                pb.style.width = '100%';
+                document.getElementById('close-btn').style.display = 'block'; document.getElementById('close-btn').innerText = "Taslağı Kaydet";
+            } 
+            else if (simType === 'checker' || simType === 'burn' || simType === 'generate') {
+                pb.style.width = '30%';
+                await addLog(simType === 'burn' ? "> ETDA Madde 3(4) uyarınca iptal protokolü başlatıldı..." : "> UK ETDA 2023 & MLETR Zilyetlik kontrolü...");
+                await addLog("> IG P&I kulüp standartları (DCSA formatı) doğrulandı.");
+                await addLog("> Lütfen QES İmzanızı / Mührünüzü onaylayın...", 0, 'log-warning');
+                
+                document.getElementById('interactive-sign-area').style.display = 'block';
+                await new Promise(resolve => { signPromiseResolver = resolve; });
+
+                pb.style.width = '70%';
+                await addLog("> İmza Başarılı! (ArkSigner QES Onaylandı)", 20, 'log-success');
+                if (simType === 'checker') {
+                    await addLog("> Double-Spending (Çifte Harcama) engelleme: Başarılı.");
+                    await addLog("> Zilyetlik WORM kasasında (Exclusive Control) transfer ediliyor...");
+                } else if (simType === 'burn') {
+                    await addLog("> Dijital belge Azure Ledger üzerinden kalıcı olarak silindi (Burn).");
+                }
+                
+                pb.style.width = '100%';
+                await addLog("> İşlem kusursuz tamamlandı.", 10, 'log-success');
+                document.getElementById('close-btn').style.display = 'block'; document.getElementById('close-btn').innerText = "Tamamla";
+            }
+            else if (simType === 'lc') {
+                pb.style.width = '20%';
+                await addLog("> eBL Zilyetliği (Possession) Banka tarafından doğrulandı...");
+                await addLog("> Akıllı Sözleşme tetiklendi.");
+                
+                document.getElementById('smart-contract-area').style.display = 'block';
+                await new Promise(resolve => { signPromiseResolver = resolve; });
+
+                pb.style.width = '80%';
+                await addLog("> 0x2A4F... Cüzdanından $2,500,000 USD Serbest Bırakıldı.", 30, 'log-success');
+                await addLog("> Fon Yükleyici (Shipper) hesabına transfer ediliyor...", 20);
+                pb.style.width = '100%';
+                await addLog("> Akreditif Dosyası Kapatıldı.", 10, 'log-success');
+                document.getElementById('close-btn').style.display = 'block'; document.getElementById('close-btn').innerText = "Finansal İşlemi Bitir";
+            }
+        }
+
+        function executeSignature() { document.getElementById('interactive-sign-area').style.display = 'none'; if(signPromiseResolver) signPromiseResolver(); }
+        function executeSmartContract() { document.getElementById('smart-contract-area').style.display = 'none'; if(signPromiseResolver) signPromiseResolver(); }
+
+        function closeActionModal() {
+            document.getElementById('actionModal').style.display = 'none';
+            const now = new Date();
+            const timeStr = `${now.getDate()} Tem ${now.getFullYear()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+            const fakeTx = '0x' + Math.random().toString(16).substr(2, 8);
+            const myName = kybData[activeAccount].name.split(' (')[0];
+            const ebl = eblDatabase.find(e => e.id === targetId);
+
+            if (simType === 'maker') {
+                ebl.pendingApproval = true;
+            } 
+            else if (simType === 'checker') {
+                ebl.pendingApproval = false;
+                ebl.owner = ebl.targetKey;
+                ledgerDatabase.push({ tx: fakeTx, date: timeStr, no: ebl.no, type: 'Ciro Devri', msg: `${myName} -> ${kybData[ebl.targetKey].name.split(' (')[0]}` });
+            }
+            else if (simType === 'burn') {
+                ebl.status = 'paper';
+                ebl.burnDate = timeStr;
+                ledgerDatabase.push({ tx: fakeTx, date: timeStr, no: ebl.no, type: 'Kağıda Dön (Burn)', msg: `${myName} -> Fiziksel Nüsha` });
+                switchTab('paper', document.querySelectorAll('.menu-item')[3]); 
+            }
+            else if (simType === 'lc') {
+                ledgerDatabase.push({ tx: fakeTx, date: timeStr, no: ebl.no, type: 'L/C Ödeme', msg: `Banka -> Yükleyici` });
+            }
+            else if (simType === 'generate') {
+                sharedDocuments.push({ id: 'd'+Math.random(), name: `${targetId} (New)`, type: 'Doc', uploader: activeAccount, date: 'Bugün' });
+                switchTab('dataroom', document.querySelectorAll('.menu-item')[4]); 
+            }
+
+            renderAll();
+        }
+    </script>
+</body>
+</html>
