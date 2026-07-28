@@ -223,7 +223,7 @@
                 <div class="kyc-card">
                     <h3 style="color: var(--primary);">💳 Kriptografik Altyapı (CA & ACL)</h3>
                     <div class="cert-info"><span>Sertifika Sağlayıcı:</span> <span>ArkSigner Kök Sertifika (CA)</span></div>
-                    <div class="cert-info"><span>Ledger Endpoint:</span> <span style="font-size:11px;">maresignconfidentialledger</span></div>
+                    <div class="cert-info"><span>Ledger Endpoint:</span> <span style="font-size:11px;">maresign-ledger-swe</span></div>
                     <div class="cert-info"><span>Kullanılan Donanım:</span> <span id="kyb-hw"></span></div>
                     <button class="btn btn-outline" style="width: 100%; margin-top: 15px; border-color:var(--secondary); color:var(--secondary);" onclick="alert('Azure Confidential Ledger Enclave bağlantısı aktif ve güvenli.')">ACL Hardware Node Ping</button>
                 </div>
@@ -276,7 +276,7 @@
             </div>
             <div id="qr-result" style="display: none; background: #F0FAF7; padding: 20px; border-radius: 10px; border: 2px solid #2ED47A;">
                 <h3 style="color: #117A65; margin-top: 0;">✅ ACL WORM Kaydı Doğrulandı</h3>
-                <p style="margin: 5px 0; font-size: 13px;"><strong>Endpoint:</strong> maresignconfidentialledger.confidential-ledger.azure.com</p>
+                <p style="margin: 5px 0; font-size: 13px;"><strong>Endpoint:</strong> maresign-ledger-swe.confidential-ledger.azure.com</p>
                 <p style="margin: 5px 0; font-size: 13px;"><strong>Mevcut Zilyet:</strong> <span id="qr-owner"></span></p>
                 <p style="margin: 5px 0; font-size: 13px;"><strong>Merkle Root Proof:</strong> <span style="font-family:monospace; font-size:11px; color:#7B1FA2;">0x9A2F...C881</span></p>
             </div>
@@ -307,7 +307,7 @@
     <script>
         // --- CONFIGURATION: REAL AZURE CONFIDENTIAL LEDGER & BLOB VAULT ---
         const ACL_CONFIG = {
-            ledgerEndpoint: "https://maresignconfidentialledger.confidential-ledger.azure.com",
+            ledgerEndpoint: "https://maresign-ledger-swe.confidential-ledger.azure.com",
             apiVersion: "2023-05-13"
         };
 
