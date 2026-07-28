@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maresign - Enterprise eBL & Trust Dashboard</title>
+    <title>Maresign - Enterprise Trade & Trust Gateway</title>
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -11,54 +11,56 @@
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            50: '#F0F7FF',
-                            100: '#E0EFFE',
-                            500: '#00A3E0',
-                            900: '#0A2540',
-                        },
-                        slateBg: '#F8FAFC',
-                        borderColor: '#E2E8F0',
+                        corporate: '#0A2540',
+                        corporateHover: '#071D33',
+                        accentBlue: '#00A3E0',
+                        bgMain: '#F8FAFC',
+                        cardBg: '#FFFFFF',
+                        borderSlate: '#E2E8F0',
+                        textDark: '#0F172A',
+                        textMuted: '#64748B',
+                        ledgerPurple: '#7C3AED'
                     }
                 }
             }
         }
     </script>
     <style>
-        body { background-color: #F8FAFC; color: #0F172A; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.2s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+        body { background-color: #F8FAFC; color: #0F172A; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; min-height: 100vh; }
+        .view-section { display: none; animation: fadeIn 0.3s ease-in-out forwards; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* v0/shadcn Table & Card Adjustments */
-        .shadcn-card { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03); }
-        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
+        .enterprise-card { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
+        .dot-pulse { display: inline-block; width: 8px; height: 8px; background-color: #10B981; border-radius: 50%; box-shadow: 0 0 8px #10B981; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.1); } }
     </style>
 </head>
-<body class="min-h-screen bg-slateBg antialiased">
+<body class="antialiased">
 
-    <!-- DASHBOARD HEADER (components/dashboard-header.tsx) -->
-    <header class="sticky top-0 z-40 bg-white border-b border-borderColor">
-        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-6">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-lg bg-brand-900 text-white font-bold flex items-center justify-center text-lg">M</div>
-                    <span class="text-xl font-bold tracking-tight text-brand-900">Mare<span class="text-brand-500">sign</span></span>
+    <!-- TOP HEADER / NAVBAR -->
+    <header class="bg-white border-b border-borderSlate sticky top-0 z-40">
+        <div class="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <!-- MARESIGN YENİ LOGO ENTEGRASYONU -->
+                <div class="flex items-center gap-3">
+                    <img src="logo.png" alt="Maresign Logo" class="h-10 w-auto object-contain hover:scale-105 transition-transform cursor-pointer">
+                    <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[11px] font-semibold border border-slate-200">ENTERPRISE</span>
                 </div>
-                <div class="hidden sm:flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-md border border-slate-200 text-xs text-slate-600 font-medium">
-                    <span>Ledger Node:</span>
-                    <span class="font-mono text-purple-700 font-bold">maresign-ledger-swe</span>
+                <div class="hidden md:flex items-center gap-1 text-xs text-textMuted font-medium">
+                    <span>Azure Confidential Ledger:</span>
+                    <span class="font-mono text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 font-bold">maresign-ledger-swe</span>
                 </div>
             </div>
 
-            <div class="flex items-center gap-3">
-                <button onclick="openQRModal()" class="px-3 py-1.5 text-xs font-semibold text-slate-700 border border-slate-300 rounded-md hover:bg-slate-50 transition-all flex items-center gap-1.5">
-                    🔍 Denetçi Doğrulama
+            <div class="flex items-center gap-4">
+                <button onclick="openQRModal()" class="px-3.5 py-1.5 text-xs font-semibold text-corporate border border-slate-300 rounded-lg hover:bg-slate-50 transition-all flex items-center gap-1.5">
+                    🔍 Gümrük / Denetçi Doğrulama
                 </button>
-                <div class="h-5 w-px bg-slate-200"></div>
-                <div class="flex items-center gap-2 bg-slate-50 p-1 rounded-md border border-slate-200">
-                    <span class="status-dot bg-emerald-500"></span>
-                    <select id="account-switcher" onchange="changeAccount(this.value)" class="bg-transparent text-xs font-bold text-brand-900 outline-none cursor-pointer">
+                <div class="h-6 w-px bg-slate-200"></div>
+                <div class="flex items-center gap-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200">
+                    <span class="dot-pulse ml-1"></span>
+                    <select id="account-switcher" onchange="changeAccount(this.value)" class="bg-transparent text-xs font-bold text-corporate outline-none cursor-pointer pr-2">
                         <option value="shipper">Maresign Exporters Ltd. (Yükleyici)</option>
                         <option value="carrier">MSC Ocean Taşıma (Kaptan)</option>
                         <option value="agent">Liman Gümrük Acentesi (Acente)</option>
@@ -70,42 +72,42 @@
         </div>
     </header>
 
-    <div class="max-w-7xl mx-auto px-6 py-8 flex gap-8">
-
-        <!-- DASHBOARD SIDEBAR (components/dashboard-sidebar.tsx) -->
-        <aside class="w-60 flex-shrink-0">
+    <div class="max-w-[1600px] mx-auto px-6 py-8 flex gap-8">
+        
+        <!-- SIDE NAVIGATION -->
+        <aside class="w-64 flex-shrink-0">
             <nav class="space-y-6">
                 <div>
-                    <div class="px-3 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Mülkiyet & Finans (MLETR)</div>
+                    <div class="px-3 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Mülkiyet & Finans (MLETR)</div>
                     <div class="space-y-1">
-                        <button onclick="switchTab('vault', this)" class="nav-item active w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-md bg-brand-900 text-white transition-all">
+                        <button onclick="switchTab('vault', this)" class="menu-item active w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg bg-corporate text-white transition-all">
                             🚢 eBL Kasası (Vault)
                         </button>
-                        <button onclick="switchTab('network', this)" class="nav-item w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-md text-slate-600 hover:bg-slate-100 transition-all">
+                        <button onclick="switchTab('network', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
                             🔒 Azure Ledger Ağı
                         </button>
-                        <button onclick="switchTab('paper', this)" class="nav-item w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-md text-slate-600 hover:bg-slate-100 transition-all">
+                        <button onclick="switchTab('paper', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
                             🖨️ ETDA Kağıt Arşivi
                         </button>
                     </div>
                 </div>
 
                 <div>
-                    <div class="px-3 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Liman & Operasyon (DCSA)</div>
+                    <div class="px-3 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Liman & Operasyon (DCSA)</div>
                     <div class="space-y-1">
-                        <button onclick="switchTab('dataroom', this)" class="nav-item w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-md text-slate-600 hover:bg-slate-100 transition-all">
+                        <button onclick="switchTab('dataroom', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
                             📁 Ortak Belge Alanı
                         </button>
-                        <button onclick="switchTab('templates', this)" class="nav-item w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-md text-slate-600 hover:bg-slate-100 transition-all">
+                        <button onclick="switchTab('templates', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
                             📝 Belge Üret & Yükle
                         </button>
                     </div>
                 </div>
 
                 <div>
-                    <div class="px-3 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Sistem & Güvenlik</div>
+                    <div class="px-3 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Sistem & Güvenlik</div>
                     <div class="space-y-1">
-                        <button onclick="switchTab('kyc', this)" class="nav-item w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-md text-slate-600 hover:bg-slate-100 transition-all">
+                        <button onclick="switchTab('kyc', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
                             ⚙️ ArkSigner KYB Profili
                         </button>
                     </div>
@@ -113,154 +115,156 @@
             </nav>
         </aside>
 
-        <!-- MAIN VIEW CONTAINER (components/ebl-dashboard.tsx) -->
+        <!-- MAIN CONTENT AREA -->
         <main class="flex-1">
-
+            
             <!-- TAB 1: eBL VAULT -->
-            <section id="tab-vault" class="tab-content active">
-                <div class="mb-6">
-                    <h1 class="text-xl font-bold text-brand-900">Elektronik Konşimento (eBL) Yönetimi</h1>
-                    <p class="text-xs text-slate-500 mt-1">Münhasır kontrolünüz altındaki aktif ticari belgeler ve ciro devir süreçleri.</p>
+            <section id="view-vault" class="view-section active">
+                <div class="mb-6 flex justify-between items-end">
+                    <div>
+                        <h1 class="text-xl font-bold text-corporate">Münhasır Kontrolünüzdeki (Exclusive Control) Belgeler</h1>
+                        <p class="text-xs text-textMuted mt-1">MLETR ve UK ETDA 2023 standartlarına uygun dijital mülkiyet kasanız.</p>
+                    </div>
                 </div>
 
-                <div class="shadcn-card overflow-hidden">
+                <div class="enterprise-card overflow-hidden">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-slate-50 border-b border-borderColor text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                                <th class="p-4">Zilyetlik</th>
-                                <th class="p-4">eBL Numarası</th>
-                                <th class="p-4">Yük & Rota</th>
-                                <th class="p-4 text-right">MLETR / Finans Aksiyonu</th>
+                            <tr class="bg-slate-50 border-b border-borderSlate text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                                <th class="p-4">Zilyetlik (Possession)</th>
+                                <th class="p-4">eBL No & Standart</th>
+                                <th class="p-4">Yük, Rota & IoT</th>
+                                <th class="p-4 text-right">İşlemler (MLETR / Finans)</th>
                             </tr>
                         </thead>
-                        <tbody id="ebl-body" class="divide-y divide-borderColor text-xs"></tbody>
+                        <tbody id="ebl-body" class="divide-y divide-borderSlate text-xs"></tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- TAB 2: LEDGER NETWORK -->
-            <section id="tab-network" class="tab-content">
+            <!-- TAB 2: LEDGER -->
+            <section id="view-network" class="view-section">
                 <div class="mb-6">
-                    <h1 class="text-xl font-bold text-brand-900">🔒 Azure Confidential Ledger (Audit Trace)</h1>
-                    <p class="text-xs text-slate-500 mt-1">İsveç SGX Confidential Enclaves ortamında saklanan WORM kayıtları.</p>
+                    <h1 class="text-xl font-bold text-corporate">🔒 Azure Confidential Ledger (ACL Audit Trace)</h1>
+                    <p class="text-xs text-textMuted mt-1">İsveç SGX Confidential Enclaves ortamında kilitlenen değiştirilemez (Immutable) WORM kayıtları.</p>
                 </div>
 
-                <div class="shadcn-card overflow-hidden">
+                <div class="enterprise-card overflow-hidden">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-slate-50 border-b border-borderColor text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                            <tr class="bg-slate-50 border-b border-borderSlate text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                                 <th class="p-4">ACL Receipt (JSON İndir)</th>
                                 <th class="p-4">Zaman Damgası</th>
                                 <th class="p-4">Belge No</th>
-                                <th class="p-4">İşlem</th>
-                                <th class="p-4">SGX Enclave Proof</th>
+                                <th class="p-4">Aksiyon</th>
+                                <th class="p-4">SGX Enclave Kaydı</th>
                             </tr>
                         </thead>
-                        <tbody id="ledger-body" class="divide-y divide-borderColor text-xs"></tbody>
+                        <tbody id="ledger-body" class="divide-y divide-borderSlate text-xs"></tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- TAB 3: PAPER ARCHIVE -->
-            <section id="tab-paper" class="tab-content">
+            <!-- TAB 3: PAPER -->
+            <section id="view-paper" class="view-section">
                 <div class="mb-6">
-                    <h1 class="text-xl font-bold text-brand-900">🖨️ ETDA Kağıt Arşivi (Switch-to-Paper)</h1>
-                    <p class="text-xs text-slate-500 mt-1">Dijital ikizi ACL üzerinde yok edilip fiziksel nüshaya dönüştürülen belgeler.</p>
+                    <h1 class="text-xl font-bold text-corporate">🖨️ ETDA Kağıt Arşivi (Switch-to-Paper)</h1>
+                    <p class="text-xs text-textMuted mt-1">Dijital ikizi ACL üzerinde yasal olarak imha edilip fiziksel nüshaya dönüştürülen belgeler.</p>
                 </div>
 
-                <div class="shadcn-card overflow-hidden">
+                <div class="enterprise-card overflow-hidden">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-slate-50 border-b border-borderColor text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                            <tr class="bg-slate-50 border-b border-borderSlate text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                                 <th class="p-4">eBL Numarası</th>
                                 <th class="p-4">İptal Tarihi</th>
-                                <th class="p-4">Durum</th>
+                                <th class="p-4">Yasal Durum</th>
                                 <th class="p-4 text-right">Fiziksel Nüsha</th>
                             </tr>
                         </thead>
-                        <tbody id="paper-body" class="divide-y divide-borderColor text-xs"></tbody>
+                        <tbody id="paper-body" class="divide-y divide-borderSlate text-xs"></tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- TAB 4: DATA ROOM -->
-            <section id="tab-dataroom" class="tab-content">
+            <!-- TAB 4: DATAROOM -->
+            <section id="view-dataroom" class="view-section">
                 <div class="mb-6">
-                    <h1 class="text-xl font-bold text-brand-900">📁 Ortak Belge Alanı (Shared Data Room)</h1>
-                    <p class="text-xs text-slate-500 mt-1">Sevkiyata ait e-Mühürlü ticari belgeler.</p>
+                    <h1 class="text-xl font-bold text-corporate">📁 Ortak Belge Alanı (Shared Data Room)</h1>
+                    <p class="text-xs text-textMuted mt-1">Sevkiyata ait e-Mühürlü ticari belgeler ve onay süreçleri.</p>
                 </div>
 
-                <div class="shadcn-card overflow-hidden">
+                <div class="enterprise-card overflow-hidden">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-slate-50 border-b border-borderColor text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                            <tr class="bg-slate-50 border-b border-borderSlate text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                                 <th class="p-4">Belge Adı</th>
-                                <th class="p-4">Yükleyen</th>
+                                <th class="p-4">Yükleyen Kurum</th>
                                 <th class="p-4">Tarih</th>
                                 <th class="p-4">Güvenlik</th>
                                 <th class="p-4 text-right">Aksiyon</th>
                             </tr>
                         </thead>
-                        <tbody id="dataroom-body" class="divide-y divide-borderColor text-xs"></tbody>
+                        <tbody id="dataroom-body" class="divide-y divide-borderSlate text-xs"></tbody>
                     </table>
                 </div>
             </section>
 
             <!-- TAB 5: TEMPLATES -->
-            <section id="tab-templates" class="tab-content">
+            <section id="view-templates" class="view-section">
                 <div class="mb-6">
-                    <h1 class="text-xl font-bold text-brand-900">📝 Belge Üret & Yükle</h1>
-                    <p class="text-xs text-slate-500 mt-1">Uluslararası ticaret formatlarına uygun taslaklar.</p>
+                    <h1 class="text-xl font-bold text-corporate">📝 Belge Üret & Yükle</h1>
+                    <p class="text-xs text-textMuted mt-1">Standartlara uygun uluslararası ticaret belgeleri taslağı oluşturun.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="shadcn-card p-6 text-center hover:border-brand-500 transition-all">
-                        <div class="text-3xl mb-2">📜</div>
-                        <h3 class="font-bold text-brand-900 text-sm mb-1">Elektronik Konşimento</h3>
-                        <p class="text-xs text-slate-500 mb-4">DCSA Standartlarında eBL</p>
-                        <button onclick="openDocumentTemplate('eBL')" class="w-full py-2 bg-slate-100 hover:bg-brand-900 hover:text-white text-brand-900 font-semibold text-xs rounded-md transition-all">Oluştur</button>
+                    <div class="enterprise-card p-6 text-center hover:border-accentBlue transition-all">
+                        <div class="text-3xl mb-3">📜</div>
+                        <h3 class="font-bold text-corporate text-sm mb-1">Elektronik Konşimento</h3>
+                        <p class="text-xs text-textMuted mb-4">DCSA Standartlarında eBL</p>
+                        <button onclick="openDocumentTemplate('eBL')" class="w-full py-2 bg-slate-100 hover:bg-corporate hover:text-white text-corporate font-semibold text-xs rounded-lg transition-all">Oluştur</button>
                     </div>
-                    <div class="shadcn-card p-6 text-center hover:border-brand-500 transition-all">
-                        <div class="text-3xl mb-2">📦</div>
-                        <h3 class="font-bold text-brand-900 text-sm mb-1">Kargo Manifestosu</h3>
-                        <p class="text-xs text-slate-500 mb-4">Gümrük kargo beyanı</p>
-                        <button onclick="openDocumentTemplate('Manifest')" class="w-full py-2 bg-slate-100 hover:bg-brand-900 hover:text-white text-brand-900 font-semibold text-xs rounded-md transition-all">Oluştur</button>
+                    <div class="enterprise-card p-6 text-center hover:border-accentBlue transition-all">
+                        <div class="text-3xl mb-3">📦</div>
+                        <h3 class="font-bold text-corporate text-sm mb-1">Kargo Manifestosu</h3>
+                        <p class="text-xs text-textMuted mb-4">Gümrük kargo beyanı</p>
+                        <button onclick="openDocumentTemplate('Manifest')" class="w-full py-2 bg-slate-100 hover:bg-corporate hover:text-white text-corporate font-semibold text-xs rounded-lg transition-all">Oluştur</button>
                     </div>
-                    <div class="shadcn-card p-6 text-center hover:border-brand-500 transition-all">
-                        <div class="text-3xl mb-2">📄</div>
-                        <h3 class="font-bold text-brand-900 text-sm mb-1">Ticari Fatura</h3>
-                        <p class="text-xs text-slate-500 mb-4">Commercial Invoice</p>
-                        <button onclick="openDocumentTemplate('Invoice')" class="w-full py-2 bg-slate-100 hover:bg-brand-900 hover:text-white text-brand-900 font-semibold text-xs rounded-md transition-all">Oluştur</button>
+                    <div class="enterprise-card p-6 text-center hover:border-accentBlue transition-all">
+                        <div class="text-3xl mb-3">📄</div>
+                        <h3 class="font-bold text-corporate text-sm mb-1">Ticari Fatura</h3>
+                        <p class="text-xs text-textMuted mb-4">Commercial Invoice</p>
+                        <button onclick="openDocumentTemplate('Invoice')" class="w-full py-2 bg-slate-100 hover:bg-corporate hover:text-white text-corporate font-semibold text-xs rounded-lg transition-all">Oluştur</button>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 6: KYB PROFILE -->
-            <section id="tab-kyc" class="tab-content">
+            <!-- TAB 6: KYC -->
+            <section id="view-kyc" class="view-section">
                 <div class="mb-6">
-                    <h1 class="text-xl font-bold text-brand-900">⚙️ ArkSigner KYB Profili</h1>
-                    <p class="text-xs text-slate-500 mt-1">Kurumsal kimlik ve donanım doğrulama detayları.</p>
+                    <h1 class="text-xl font-bold text-corporate">⚙️ ArkSigner KYB (Kurumsal Profil)</h1>
+                    <p class="text-xs text-textMuted mt-1">Mevcut oturumun ArkSigner (CA) onaylı kriptografik kimlik detayları.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="shadcn-card p-6 border-t-4 border-t-brand-900">
-                        <h3 class="font-bold text-brand-900 text-sm mb-4">🏢 Kurum Bilgileri</h3>
+                    <div class="enterprise-card p-6 border-t-4 border-t-corporate">
+                        <h3 class="font-bold text-corporate text-sm mb-4">🏢 Ticari Sicil & Kimlik</h3>
                         <div class="space-y-3 text-xs">
-                            <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-slate-500">Unvan:</span> <span id="kyb-name" class="font-bold text-brand-900"></span></div>
-                            <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-slate-500">Rol:</span> <span id="kyb-role" class="font-bold text-brand-500"></span></div>
-                            <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-slate-500">Vergi No:</span> <span id="kyb-mersis" class="font-bold text-brand-900"></span></div>
-                            <div class="flex justify-between py-2"><span class="text-slate-500">Doğrulama:</span> <span class="font-bold text-emerald-600">✅ ArkSigner Level 3</span></div>
+                            <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-textMuted">Kurum Adı:</span> <span id="kyb-name" class="font-bold text-corporate"></span></div>
+                            <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-textMuted">Sistem Rolü:</span> <span id="kyb-role" class="font-bold text-accentBlue"></span></div>
+                            <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-textMuted">Vergi / Mersis No:</span> <span id="kyb-mersis" class="font-bold text-corporate"></span></div>
+                            <div class="flex justify-between py-2"><span class="text-textMuted">Kurumsal Onay:</span> <span class="font-bold text-emerald-600">✅ ArkSigner Level 3</span></div>
                         </div>
                     </div>
 
-                    <div class="shadcn-card p-6 border-t-4 border-t-purple-600">
-                        <h3 class="font-bold text-brand-900 text-sm mb-4">💳 Donanım & Azure Ledger</h3>
+                    <div class="enterprise-card p-6 border-t-4 border-t-purple-600">
+                        <h3 class="font-bold text-corporate text-sm mb-4">💳 Kriptografik Donanım & Azure</h3>
                         <div class="space-y-3 text-xs">
-                            <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-slate-500">Sertifika:</span> <span class="font-bold text-brand-900">ArkSigner CA</span></div>
-                            <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-slate-500">Endpoint:</span> <span class="font-mono text-purple-700 font-bold">maresign-ledger-swe</span></div>
-                            <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-slate-500">Donanım:</span> <span id="kyb-hw" class="font-bold text-brand-900"></span></div>
+                            <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-textMuted">Sertifika Sağlayıcı:</span> <span class="font-bold text-corporate">ArkSigner CA</span></div>
+                            <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-textMuted">Ledger Endpoint:</span> <span class="font-mono text-purple-700 font-bold">maresign-ledger-swe</span></div>
+                            <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-textMuted">Güvenli Donanım:</span> <span id="kyb-hw" class="font-bold text-corporate"></span></div>
                         </div>
-                        <button onclick="alert('Azure Confidential Ledger Enclave nodeları aktif.')" class="w-full mt-6 py-2 border border-purple-300 text-purple-700 hover:bg-purple-50 text-xs font-bold rounded-md transition-all">
+                        <button onclick="alert('Azure Confidential Ledger Enclave nodeları aktif ve yanıt veriyor.')" class="w-full mt-6 py-2 border border-purple-300 text-purple-700 hover:bg-purple-50 text-xs font-bold rounded-lg transition-all">
                             ACL Hardware Node Ping
                         </button>
                     </div>
@@ -270,69 +274,68 @@
         </main>
     </div>
 
-    <!-- MODALS -->
-    <!-- TEMPLATE PREVIEW MODAL -->
+    <!-- MODAL: TEMPLATE PREVIEW -->
     <div id="templateModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl max-w-xl w-full p-6 shadow-2xl border border-slate-200">
-            <h2 id="template-modal-title" class="text-base font-bold text-brand-900 mb-3">Belge Taslağı</h2>
-            <div id="template-content" class="bg-slate-50 p-4 rounded-md border border-slate-200 mb-4 font-serif text-xs leading-relaxed"></div>
-            <div id="template-action-area" class="flex gap-2 justify-end">
-                <button id="btn-template-cancel" onclick="document.getElementById('templateModal').style.display='none'" class="px-3 py-1.5 border border-slate-300 text-slate-600 rounded-md text-xs font-semibold hover:bg-slate-50">İptal</button>
-                <button id="btn-template-sign" onclick="signAndShareDocument()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md text-xs font-semibold">💳 QES ile İmzala</button>
+        <div class="bg-white rounded-xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200">
+            <h2 id="template-modal-title" class="text-lg font-bold text-corporate mb-4">Belge Taslağı</h2>
+            <div id="template-content" class="bg-slate-50 p-6 rounded-lg border border-slate-200 mb-6 font-serif text-xs text-slate-800 leading-relaxed"></div>
+            <div id="template-action-area" class="flex gap-3 justify-end">
+                <button id="btn-template-cancel" onclick="document.getElementById('templateModal').style.display='none'" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg text-xs font-semibold hover:bg-slate-50">İptal</button>
+                <button id="btn-template-sign" onclick="signAndShareDocument()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold">💳 QES ile İmzala ve Yayınla</button>
             </div>
         </div>
     </div>
 
-    <!-- ACTION PROCESS MODAL -->
+    <!-- MODAL: ACTION LOGS & PROCESS -->
     <div id="actionModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+        <div class="bg-white rounded-xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 relative">
             <div class="text-center mb-4">
-                <h2 id="modal-title" class="text-base font-bold text-brand-900">Ağ Geçidi İşlemi</h2>
-                <p id="modal-desc" class="text-xs text-slate-500 mt-0.5">İşlem başlatılıyor...</p>
+                <h2 id="modal-title" class="text-lg font-bold text-corporate">Ağ Geçidi İşlemi</h2>
+                <p id="modal-desc" class="text-xs text-textMuted mt-0.5">İşlem başlatılıyor...</p>
             </div>
 
-            <div class="w-full bg-slate-100 rounded-full h-1.5 mb-4 overflow-hidden">
-                <div id="progress-bar" class="bg-brand-900 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+            <div class="w-full bg-slate-100 rounded-full h-2 mb-4 overflow-hidden">
+                <div id="progress-bar" class="bg-corporate h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
             </div>
 
-            <div id="modal-logs" class="bg-slate-900 text-cyan-400 font-mono text-[11px] p-3 rounded-md h-40 overflow-y-auto mb-4 leading-relaxed"></div>
+            <div id="modal-logs" class="bg-slate-900 text-cyan-400 font-mono text-[11px] p-4 rounded-lg h-48 overflow-y-auto mb-4 leading-relaxed"></div>
 
             <div id="interactive-sign-area" class="hidden">
-                <button onclick="executeSignature()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-md text-xs transition-all">💳 Onayla (QES / e-Mühür)</button>
+                <button onclick="executeSignature()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition-all">💳 Onayla (ArkSigner QES / e-Mühür)</button>
             </div>
             <div id="smart-contract-area" class="hidden">
-                <button onclick="executeSmartContract()" class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-md text-xs transition-all">🏦 Akıllı Sözleşmeyi Tetikle (ACL L/C)</button>
+                <button onclick="executeSmartContract()" class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg text-xs transition-all">🏦 Akıllı Sözleşmeyi Tetikle (ACL L/C)</button>
             </div>
 
-            <button id="close-btn" onclick="closeActionModal()" class="hidden w-full py-2 bg-brand-900 text-white font-semibold rounded-md text-xs hover:bg-slate-800 transition-all mt-2">Tamamla</button>
+            <button id="close-btn" onclick="closeActionModal()" class="hidden w-full py-2.5 bg-corporate text-white font-semibold rounded-lg text-xs hover:bg-corporateHover transition-all mt-2">Tamamla</button>
         </div>
     </div>
 
-    <!-- QR MODAL -->
+    <!-- MODAL: QR VERIFY -->
     <div id="qrModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 text-center">
-            <h2 class="text-base font-bold text-brand-900 mb-1">Gümrük Doğrulaması</h2>
-            <p class="text-xs text-slate-500 mb-4">Azure Confidential Ledger Merkle Proof sorgulanıyor...</p>
+            <h2 class="text-base font-bold text-corporate mb-1">Gümrük / Denetçi Doğrulaması</h2>
+            <p class="text-xs text-textMuted mb-4">Azure Confidential Ledger Merkle Proof sorgulanıyor...</p>
 
-            <div id="qr-scanner-anim" class="w-32 h-32 mx-auto border border-slate-300 rounded-md relative overflow-hidden bg-slate-50 mb-4 flex items-center justify-center">
-                <span class="text-2xl">🏁</span>
+            <div id="qr-scanner-anim" class="w-40 h-40 mx-auto border-2 border-corporate rounded-lg relative overflow-hidden bg-slate-50 mb-4 flex items-center justify-center">
+                <span class="text-3xl">🏁</span>
                 <div class="w-full h-0.5 bg-emerald-500 absolute top-0 shadow-[0_0_8px_#10B981] animate-[scan_2s_linear_infinite]"></div>
             </div>
 
-            <div id="qr-result" class="hidden bg-emerald-50 border border-emerald-200 p-3 rounded-md text-left text-xs mb-4">
+            <div id="qr-result" class="hidden bg-emerald-50 border border-emerald-200 p-3 rounded-lg text-left text-xs mb-4">
                 <div class="font-bold text-emerald-800 mb-1">✅ ACL WORM Kaydı Doğrulandı</div>
                 <div class="text-slate-600 space-y-1 text-[11px]">
                     <div><strong>Endpoint:</strong> maresign-ledger-swe</div>
-                    <div><strong>Mevcut Zilyet:</strong> <span id="qr-owner" class="text-brand-900 font-semibold"></span></div>
+                    <div><strong>Mevcut Zilyet:</strong> <span id="qr-owner" class="text-corporate font-semibold"></span></div>
                     <div><strong>Merkle Root:</strong> <span class="font-mono text-purple-700">0x9A2F...C881</span></div>
                 </div>
             </div>
 
-            <button onclick="document.getElementById('qrModal').style.display='none'" class="w-full py-1.5 border border-slate-300 text-slate-600 font-semibold rounded-md text-xs hover:bg-slate-50">Kapat</button>
+            <button onclick="document.getElementById('qrModal').style.display='none'" class="w-full py-2 border border-slate-300 text-slate-600 font-semibold rounded-lg text-xs hover:bg-slate-50">Kapat</button>
         </div>
     </div>
 
-    <!-- ENGINE JAVASCRIPT -->
+    <!-- JAVASCRIPT LOGIC ENGINE -->
     <script>
         const ACL_CONFIG = {
             ledgerEndpoint: "https://maresign-ledger-swe.confidential-ledger.azure.com",
@@ -371,15 +374,15 @@
         }
 
         function switchTab(viewName, element) {
-            document.querySelectorAll('.nav-item').forEach(el => {
-                el.classList.remove('bg-brand-900', 'text-white');
+            document.querySelectorAll('.menu-item').forEach(el => {
+                el.classList.remove('bg-corporate', 'text-white');
                 el.classList.add('text-slate-600', 'hover:bg-slate-100');
             });
-            element.classList.add('bg-brand-900', 'text-white');
+            element.classList.add('bg-corporate', 'text-white');
             element.classList.remove('text-slate-600', 'hover:bg-slate-100');
 
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + viewName).classList.add('active');
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + viewName).classList.add('active');
             if(viewName === 'network') renderLedger();
         }
 
@@ -394,8 +397,8 @@
                 
                 let statusHtml = '';
                 if (isOwner) {
-                    if(ebl.pendingApproval) statusHtml = `<span class="px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded text-[11px] font-bold">⏳ Onay Bekliyor</span>`;
-                    else statusHtml = `<span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-[11px] font-bold">👑 Münhasır Kontrol (Sizde)</span>`;
+                    if(ebl.pendingApproval) statusHtml = `<span class="px-2 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded text-[11px] font-bold">⏳ Onay Bekliyor</span>`;
+                    else statusHtml = `<span class="px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-[11px] font-bold">👑 Münhasır Kontrol (Sizde)</span>`;
                 } else {
                     statusHtml = `<span class="text-slate-500 font-semibold">${kybData[ebl.owner].name.split(' (')[0]}</span>`;
                 }
@@ -403,7 +406,7 @@
                 let actionHtml = '';
                 if (isOwner) {
                     if (ebl.pendingApproval) {
-                        actionHtml = `<button onclick="startAction('checker', '${ebl.id}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-semibold transition-all">💳 QES Onayla</button>`;
+                        actionHtml = `<button onclick="startAction('checker', '${ebl.id}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-semibold transition-all">💳 QES Onayla</button>`;
                     } else {
                         let opts = '';
                         for (const [key, val] of Object.entries(kybData)) if (key !== activeAccount) opts += `<option value="${key}">${val.name.split(' (')[0]}</option>`;
@@ -415,8 +418,8 @@
                                     <option value="lc">L/C Ödemesi Başlat</option>
                                 </select>
                                 <select id="target-${ebl.id}" class="bg-slate-50 border border-slate-300 text-slate-700 text-xs rounded px-2 py-1 outline-none">${opts}</select>
-                                <button onclick="triggerSelectedAction('${ebl.id}')" class="px-3 py-1 bg-brand-900 hover:bg-slate-800 text-white rounded text-xs font-semibold transition-all">İşlem Yap</button>
-                                <button onclick="startAction('burn', '${ebl.id}')" class="px-2 py-1 border border-red-200 text-red-600 hover:bg-red-50 rounded text-xs font-semibold transition-all">🖨️ Burn</button>
+                                <button onclick="triggerSelectedAction('${ebl.id}')" class="px-3 py-1 bg-corporate hover:bg-corporateHover text-white rounded text-xs font-semibold transition-all">İşlem Yap</button>
+                                <button onclick="startAction('burn', '${ebl.id}')" class="px-2.5 py-1 border border-red-200 text-red-600 hover:bg-red-50 rounded text-xs font-semibold transition-all">🖨️ Burn</button>
                             </div>`;
                     }
                 } else actionHtml = '<span class="text-slate-400 font-medium">Sadece Görüntüleme</span>';
@@ -424,8 +427,8 @@
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50/80 transition-all">
                         <td class="p-4">${statusHtml}</td>
-                        <td class="p-4"><strong class="text-brand-900">${ebl.no}</strong><br><span class="text-[11px] text-slate-400 font-mono">${ebl.type}</span></td>
-                        <td class="p-4"><span class="font-medium text-slate-700">${ebl.goods}</span><br><span class="text-[11px] text-slate-400">${ebl.route}</span></td>
+                        <td class="p-4"><strong class="text-corporate">${ebl.no}</strong><br><span class="text-[11px] text-textMuted font-mono">${ebl.type}</span></td>
+                        <td class="p-4"><span class="font-medium text-slate-700">${ebl.goods}</span><br><span class="text-[11px] text-textMuted">${ebl.route}</span></td>
                         <td class="p-4 text-right">${actionHtml}</td>
                     </tr>`;
             });
@@ -439,11 +442,11 @@
             sharedDocuments.forEach(doc => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50/80">
-                        <td class="p-4 font-semibold text-brand-900">${doc.name}</td>
+                        <td class="p-4 font-semibold text-corporate">${doc.name}</td>
                         <td class="p-4 text-slate-600">${kybData[doc.uploader].name.split(' (')[0]}</td>
                         <td class="p-4 text-slate-500">${doc.date}</td>
                         <td class="p-4"><span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded text-[11px] font-semibold">✅ ArkSigner Mühürlü</span></td>
-                        <td class="p-4 text-right"><button onclick="viewDocumentTemplate('${doc.name}')" class="text-brand-500 hover:underline font-semibold">İncele</button></td>
+                        <td class="p-4 text-right"><button onclick="viewDocumentTemplate('${doc.name}')" class="text-accentBlue hover:underline font-semibold">İncele</button></td>
                     </tr>`;
             });
         }
@@ -457,7 +460,7 @@
                     <tr class="hover:bg-slate-50/80">
                         <td class="p-4 font-mono text-purple-700 font-bold cursor-pointer hover:underline" onclick="makbuzIndir('${log.tx}', '${log.no}', '${log.type}')" title="Bağımsız JSON Makbuzunu İndir">${log.tx} 📥</td>
                         <td class="p-4 text-slate-500">${log.date}</td>
-                        <td class="p-4 font-semibold text-brand-900">${log.no}</td>
+                        <td class="p-4 font-semibold text-corporate">${log.no}</td>
                         <td class="p-4"><span class="px-2 py-0.5 border rounded text-[11px] font-semibold ${tagClass}">${log.type}</span></td>
                         <td class="p-4 text-slate-600">${log.msg}<br><span class="text-[10px] text-slate-400 font-mono">SGX Block: #${Math.floor(Math.random() * 899999 + 100000)}</span></td>
                     </tr>`;
@@ -472,27 +475,26 @@
             burnedDocs.forEach(ebl => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50/80">
-                        <td class="p-4 font-bold text-brand-900">${ebl.no}</td>
+                        <td class="p-4 font-bold text-corporate">${ebl.no}</td>
                         <td class="p-4 text-slate-500">${ebl.burnDate}</td>
                         <td class="p-4"><span class="px-2 py-0.5 bg-red-50 text-red-700 border border-red-200 rounded text-[11px] font-semibold">Dijital İkizi Yok Edildi</span></td>
-                        <td class="p-4 text-right"><button onclick="alert('PDF yazdırılıyor...')" class="px-3 py-1 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded text-xs font-semibold">🖨️ Yazdır (PDF)</button></td>
+                        <td class="p-4 text-right"><button onclick="printPDF('${ebl.no}')" class="px-3 py-1 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded text-xs font-semibold">🖨️ Yazdır (PDF)</button></td>
                     </tr>`;
             });
         }
 
-        // --- ACTION ENGINE ---
-        let simType = '', targetId = '', signPromiseResolver = null, lastCreatedAclTx = '';
-
+        // --- TEMPLATES ENGINE ---
+        let currentDraftType = '';
         function openDocumentTemplate(docType) {
             currentDraftType = docType;
             document.getElementById('template-modal-title').innerText = "Belge Taslağı: " + docType;
-            document.getElementById('template-content').innerHTML = `<h1>Draft ${docType}</h1><p>Maresign Exporters Ltd. üretimidir.</p>`;
+            document.getElementById('template-content').innerHTML = `<h1>Draft ${docType}</h1><p>Maresign Exporters Ltd. tarafından güvenli üretildi.</p>`;
             document.getElementById('btn-template-sign').style.display = 'block';
             document.getElementById('templateModal').style.display = 'flex';
         }
         function viewDocumentTemplate(docName) {
             document.getElementById('template-modal-title').innerText = "Belge Görüntüleyici";
-            document.getElementById('template-content').innerHTML = `<h1>${docName}</h1><p>ArkSigner e-Mühürlüdür.</p>`;
+            document.getElementById('template-content').innerHTML = `<h1>${docName}</h1><p>ArkSigner e-Mühür doğrulaması aktif.</p>`;
             document.getElementById('btn-template-sign').style.display = 'none';
             document.getElementById('templateModal').style.display = 'flex';
         }
@@ -523,24 +525,26 @@
                 const ebl = eblDatabase.find(e => e.id === dataId);
                 ebl.targetKey = document.getElementById(`target-${dataId}`).value;
                 document.getElementById('modal-title').innerText = "Operasyon Hazırlığı (Maker)";
-                document.getElementById('modal-desc').innerText = "Devir taslağı (MLETR) oluşturuluyor...";
+                document.getElementById('modal-desc').innerText = "Devir taslağı (MLETR Endorsement) oluşturuluyor...";
             } else if (action === 'checker') {
                 document.getElementById('modal-title').innerText = "Yönetici Onayı (Checker)";
                 document.getElementById('modal-desc').innerText = "Münhasır Kontrol devri için QES bekleniyor...";
             } else if (action === 'burn') {
                 document.getElementById('modal-title').innerText = "Switch-to-Paper (ETDA 2023)";
-                document.getElementById('modal-desc').innerText = "Dijital İkiz (Digital Twin) yok edilecek...";
+                document.getElementById('modal-desc').innerText = "Dijital İkiz (Digital Twin) kanunen yok edilecek...";
             } else if (action === 'lc') {
                 const ebl = eblDatabase.find(e => e.id === dataId);
                 if(document.getElementById(`target-${dataId}`)) ebl.targetKey = document.getElementById(`target-${dataId}`).value;
                 document.getElementById('modal-title').innerText = "Akreditif (L/C) Otomasyonu";
-                document.getElementById('modal-desc').innerText = "Akıllı sözleşme kontrol ediliyor...";
+                document.getElementById('modal-desc').innerText = "Akıllı sözleşme şartları kontrol ediliyor...";
             } else if (action === 'generate') {
                 document.getElementById('modal-title').innerText = "Belge Üretimi";
-                document.getElementById('modal-desc').innerText = `${dataId} üretiliyor...`;
+                document.getElementById('modal-desc').innerText = `${dataId} oluşturulup Ortak Alana aktarılıyor...`;
             }
             runActionSimulation();
         }
+
+        let simType = '', targetId = '', signPromiseResolver = null, lastCreatedAclTx = '';
 
         async function runActionSimulation() {
             const logBox = document.getElementById('modal-logs');
@@ -561,14 +565,14 @@
             else if (['checker', 'burn', 'generate'].includes(simType)) {
                 pb.style.width = '20%';
                 await addLog("> UK ETDA 2023 & MLETR Zilyetlik kontrolü...");
-                await addLog("> Lütfen QES İmzanızı onaylayın...", 0, 'text-amber-400');
+                await addLog("> Lütfen QES İmzanızı / Mührünüzü onaylayın...", 0, 'text-amber-400');
                 
                 document.getElementById('interactive-sign-area').style.display = 'block';
                 await new Promise(resolve => { signPromiseResolver = resolve; });
 
                 pb.style.width = '60%';
                 await addLog("> İmza Başarılı! (ArkSigner QES Onaylandı)", 20, 'text-emerald-400 font-bold');
-                await addLog("> Azure ebl-payload-vault ve Ledger bağlantısı kuruluyor...", 15, 'text-purple-400');
+                await addLog("> Azure ebl-payload-vault ve Confidential Ledger bağlantısı kuruluyor...", 15, 'text-purple-400');
                 
                 lastCreatedAclTx = 'ACL-WORM-' + Math.random().toString(36).substr(2, 10).toUpperCase();
 
@@ -576,13 +580,13 @@
                 await addLog(`> ACL Tx Receipt: ${lastCreatedAclTx}`, 10, 'text-purple-300 font-bold');
                 
                 pb.style.width = '100%';
-                await addLog("> İşlem Azure WORM kasasında kilitlendi.", 10, 'text-emerald-400');
+                await addLog("> İşlem Azure WORM kasasında değiştirilemez şekilde kilitlendi.", 10, 'text-emerald-400');
                 document.getElementById('close-btn').style.display = 'block'; document.getElementById('close-btn').innerText = "Tamamla";
             }
             else if (simType === 'lc') {
                 pb.style.width = '20%';
                 await addLog("> eBL Zilyetliği Banka tarafından doğrulandı...");
-                await addLog("> Akıllı Sözleşme tetiklendi.");
+                await addLog("> Akıllı Sözleşme (Smart Contract) tetiklendi.");
                 
                 document.getElementById('smart-contract-area').style.display = 'block';
                 await new Promise(resolve => { signPromiseResolver = resolve; });
@@ -617,7 +621,7 @@
             else if (simType === 'burn') {
                 ebl.status = 'paper'; ebl.burnDate = timeStr;
                 ledgerDatabase.push({ tx: lastCreatedAclTx, date: timeStr, no: ebl.no, type: 'Kağıda Dön (Burn)', msg: `${myName} -> Fiziksel Nüsha` });
-                switchTab('paper', document.querySelectorAll('.nav-item')[2]); 
+                switchTab('paper', document.querySelectorAll('.menu-item')[2]); 
             }
             else if (simType === 'lc') {
                 if(ebl && ebl.targetKey) ebl.owner = ebl.targetKey;
@@ -625,12 +629,12 @@
             }
             else if (simType === 'generate') {
                 sharedDocuments.push({ id: 'd'+Math.random(), name: `${targetId} (New)`, type: 'Doc', uploader: activeAccount, date: 'Bugün' });
-                switchTab('dataroom', document.querySelectorAll('.nav-item')[3]); 
+                switchTab('dataroom', document.querySelectorAll('.menu-item border-slate-300')[3] || document.querySelectorAll('.menu-item')[3]); 
             }
             renderAll();
         }
 
-        // --- JSON MAKBUZ İNDİRME FONKSİYONU ---
+        // --- BAĞIMSIZ DOĞRULAMA (JSON MAKBUZ) İNDİRME MOTORU ---
         function makbuzIndir(transactionId, belgeNo, islemTipi) {
             const receiptData = {
                 "ReceiptID": transactionId,
