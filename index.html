@@ -54,7 +54,7 @@
             -webkit-overflow-scrolling: touch !important; 
         }
         
-        .enterprise-card > div, 
+        /* Sadece tablolar 800px altına düşmesin, diğer kartlar serbest kalsın */
         .enterprise-card table {
             min-width: 800px !important; 
         }
@@ -81,7 +81,7 @@
                     <span class="px-2 py-0.5 bg-slate-800 text-slate-300 rounded text-[11px] font-semibold border border-slate-700 whitespace-nowrap">ENTERPRISE</span>
                 </div>
                 
-                <!-- SİMÜLASYON MODU UYARISI (Artık mobilde de görünür) -->
+                <!-- SİMÜLASYON MODU UYARISI -->
                 <div class="flex items-center gap-1.5 text-[10px] md:text-xs text-slate-400 font-medium mt-1 md:mt-0">
                     <span class="font-mono text-amber-400 bg-amber-900/30 px-2 py-1 rounded border border-amber-800/50 font-bold flex items-center gap-1.5 shadow-[0_0_10px_rgba(251,191,36,0.2)]">
                         <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
@@ -116,7 +116,7 @@
     <div class="max-w-[1600px] mx-auto px-6 py-8 flex gap-8">
         
         <!-- SIDE NAVIGATION -->
-        <aside class="w-64 flex-shrink-0">
+        <aside class="w-64 flex-shrink-0 hidden lg:block">
             <nav class="space-y-6">
                 <div>
                     <div class="px-3 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Mülkiyet & Finans (MLETR)</div>
@@ -156,8 +156,20 @@
             </nav>
         </aside>
 
+        <!-- MOBİL MENÜ KISAYOLLARI (Sadece mobilde görünür) -->
+        <div class="lg:hidden w-full mb-6">
+            <select onchange="const option = this.options[this.selectedIndex]; switchTab(option.value, option);" class="w-full bg-white border border-slate-300 text-slate-700 text-sm font-semibold rounded-lg p-3 outline-none">
+                <option value="vault">🚢 eBL Kasası (Vault)</option>
+                <option value="network">🔒 Azure Ledger Ağı</option>
+                <option value="paper">🖨️ ETDA Kağıt Arşivi</option>
+                <option value="dataroom">📁 Ortak Belge Alanı</option>
+                <option value="templates">📝 Belge Üret & Yükle</option>
+                <option value="kyc">⚙️ ArkSigner KYB Profili</option>
+            </select>
+        </div>
+
         <!-- MAIN CONTENT AREA -->
-        <main class="flex-1">
+        <main class="flex-1 w-full">
             
             <!-- TAB 1: eBL VAULT -->
             <section id="view-vault" class="view-section active">
@@ -251,32 +263,90 @@
                 </div>
             </section>
 
-            <!-- TAB 5: TEMPLATES -->
+            <!-- TAB 5: TEMPLATES (YENİLENMİŞ GÖRSELLİ KISIM) -->
             <section id="view-templates" class="view-section">
-                <div class="mb-6">
-                    <h1 class="text-xl font-bold text-corporate">📝 Belge Üret & Yükle</h1>
-                    <p class="text-xs text-textMuted mt-1">Standartlara uygun uluslararası ticaret belgeleri taslağı oluşturun.</p>
+                <div class="mb-6 border-b border-slate-200 pb-4">
+                    <h1 class="text-xl font-bold text-corporate flex items-center gap-2">
+                        📄 Belge Üret & Şablonlar
+                    </h1>
+                    <p class="text-xs text-textMuted mt-1">MLETR ve DCSA standartlarına uygun, onaylı uluslararası ticaret belgeleri oluşturun.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="enterprise-card p-6 text-center hover:border-accentBlue transition-all">
-                        <div class="text-3xl mb-3">📜</div>
-                        <h3 class="font-bold text-corporate text-sm mb-1">Elektronik Konşimento</h3>
-                        <p class="text-xs text-textMuted mb-4">DCSA Standartlarında eBL</p>
-                        <button onclick="openDocumentTemplate('eBL')" class="w-full py-2 bg-slate-100 hover:bg-corporate hover:text-white text-corporate font-semibold text-xs rounded-lg transition-all">Oluştur</button>
+                <!-- GÖRSELLİ KART GRID YAPISI -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+                    <!-- 1. Elektronik Konşimento -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 flex flex-col items-center text-center hover:shadow-lg hover:border-slate-300 transition-all group">
+                        <div class="w-16 h-16 mb-4 bg-blue-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <img src="https://img.icons8.com/fluency/96/document.png" alt="eBL" class="w-10 h-10">
+                        </div>
+                        <h3 class="text-sm font-bold text-slate-800 mb-1">Elektronik Konşimento (eBL)</h3>
+                        <p class="text-xs text-slate-500 mb-5 line-clamp-2">DCSA standartlarında, blockchain tabanlı devredilebilir dijital mülkiyet belgesi.</p>
+                        <button onclick="openDocumentTemplate('Elektronik Konşimento')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">
+                            Şablonu Doldur
+                        </button>
                     </div>
-                    <div class="enterprise-card p-6 text-center hover:border-accentBlue transition-all">
-                        <div class="text-3xl mb-3">📦</div>
-                        <h3 class="font-bold text-corporate text-sm mb-1">Kargo Manifestosu</h3>
-                        <p class="text-xs text-textMuted mb-4">Gümrük kargo beyanı</p>
-                        <button onclick="openDocumentTemplate('Manifest')" class="w-full py-2 bg-slate-100 hover:bg-corporate hover:text-white text-corporate font-semibold text-xs rounded-lg transition-all">Oluştur</button>
+
+                    <!-- 2. Ticari Fatura -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 flex flex-col items-center text-center hover:shadow-lg hover:border-slate-300 transition-all group">
+                        <div class="w-16 h-16 mb-4 bg-green-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <img src="https://img.icons8.com/fluency/96/invoice.png" alt="Invoice" class="w-10 h-10">
+                        </div>
+                        <h3 class="text-sm font-bold text-slate-800 mb-1">Ticari Fatura</h3>
+                        <p class="text-xs text-slate-500 mb-5 line-clamp-2">Gümrük işlemleri ve akreditifler için uluslararası (Commercial Invoice) formatı.</p>
+                        <button onclick="openDocumentTemplate('Ticari Fatura')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">
+                            Şablonu Doldur
+                        </button>
                     </div>
-                    <div class="enterprise-card p-6 text-center hover:border-accentBlue transition-all">
-                        <div class="text-3xl mb-3">📄</div>
-                        <h3 class="font-bold text-corporate text-sm mb-1">Ticari Fatura</h3>
-                        <p class="text-xs text-textMuted mb-4">Commercial Invoice</p>
-                        <button onclick="openDocumentTemplate('Invoice')" class="w-full py-2 bg-slate-100 hover:bg-corporate hover:text-white text-corporate font-semibold text-xs rounded-lg transition-all">Oluştur</button>
+
+                    <!-- 3. Çeki Listesi -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 flex flex-col items-center text-center hover:shadow-lg hover:border-slate-300 transition-all group">
+                        <div class="w-16 h-16 mb-4 bg-orange-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <img src="https://img.icons8.com/fluency/96/open-box.png" alt="Packing List" class="w-10 h-10">
+                        </div>
+                        <h3 class="text-sm font-bold text-slate-800 mb-1">Çeki Listesi</h3>
+                        <p class="text-xs text-slate-500 mb-5 line-clamp-2">Konteyner içi yük dağılımı, ağırlık, hacim ve paket detaylarını içeren liste.</p>
+                        <button onclick="openDocumentTemplate('Çeki Listesi')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">
+                            Şablonu Doldur
+                        </button>
                     </div>
+
+                    <!-- 4. Kargo Manifestosu -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 flex flex-col items-center text-center hover:shadow-lg hover:border-slate-300 transition-all group">
+                        <div class="w-16 h-16 mb-4 bg-cyan-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <img src="https://img.icons8.com/fluency/96/cargo-ship.png" alt="Manifest" class="w-10 h-10">
+                        </div>
+                        <h3 class="text-sm font-bold text-slate-800 mb-1">Kargo Manifestosu</h3>
+                        <p class="text-xs text-slate-500 mb-5 line-clamp-2">Gemi kaptanı ve liman otoriteleri için tüm yüklerin özet döküm belgesi.</p>
+                        <button onclick="openDocumentTemplate('Kargo Manifestosu')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">
+                            Şablonu Doldur
+                        </button>
+                    </div>
+
+                    <!-- 5. Menşe Şehadetnamesi -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 flex flex-col items-center text-center hover:shadow-lg hover:border-slate-300 transition-all group">
+                        <div class="w-16 h-16 mb-4 bg-purple-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <img src="https://img.icons8.com/fluency/96/certificate.png" alt="Origin" class="w-10 h-10">
+                        </div>
+                        <h3 class="text-sm font-bold text-slate-800 mb-1">Menşe Şehadetnamesi</h3>
+                        <p class="text-xs text-slate-500 mb-5 line-clamp-2">Malların üretildiği veya işlendiği ülkeyi kanıtlayan resmi ticaret odası belgesi.</p>
+                        <button onclick="openDocumentTemplate('Menşe Şehadetnamesi')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">
+                            Şablonu Doldur
+                        </button>
+                    </div>
+
+                    <!-- 6. Sigorta Poliçesi -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 flex flex-col items-center text-center hover:shadow-lg hover:border-slate-300 transition-all group">
+                        <div class="w-16 h-16 mb-4 bg-red-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <img src="https://img.icons8.com/fluency/96/security-checked.png" alt="Insurance" class="w-10 h-10">
+                        </div>
+                        <h3 class="text-sm font-bold text-slate-800 mb-1">Sigorta Sertifikası</h3>
+                        <p class="text-xs text-slate-500 mb-5 line-clamp-2">Nakliye sırasında oluşabilecek hasarlara karşı ICC hükümlerine uygun sigorta belgesi.</p>
+                        <button onclick="openDocumentTemplate('Sigorta Sertifikası')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">
+                            Şablonu Doldur
+                        </button>
+                    </div>
+
                 </div>
             </section>
 
@@ -419,11 +489,15 @@
                 el.classList.remove('bg-corporate', 'text-white');
                 el.classList.add('text-slate-600', 'hover:bg-slate-100');
             });
-            element.classList.add('bg-corporate', 'text-white');
-            element.classList.remove('text-slate-600', 'hover:bg-slate-100');
+            if(element && element.classList) {
+                element.classList.add('bg-corporate', 'text-white');
+                element.classList.remove('text-slate-600', 'hover:bg-slate-100');
+            }
 
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById('view-' + viewName).classList.add('active');
+            if(document.getElementById('view-' + viewName)) {
+                document.getElementById('view-' + viewName).classList.add('active');
+            }
             if(viewName === 'network') renderLedger();
         }
 
@@ -670,7 +744,7 @@
             }
             else if (simType === 'generate') {
                 sharedDocuments.push({ id: 'd'+Math.random(), name: `${targetId} (New)`, type: 'Doc', uploader: activeAccount, date: 'Bugün' });
-                switchTab('dataroom', document.querySelectorAll('.menu-item border-slate-300')[3] || document.querySelectorAll('.menu-item')[3]); 
+                switchTab('dataroom', document.querySelectorAll('.menu-item')[3]); 
             }
             renderAll();
         }
