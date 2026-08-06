@@ -26,27 +26,47 @@
         }
     </script>
     <style>
-        body { background-color: #F8FAFC; color: #0F172A; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; min-height: 100vh; overflow-x: hidden; }
-        .view-section { display: none; animation: fadeIn 0.3s ease-in-out forwards; }
-        .view-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* MOBİL TABLO ZORUNLU KAYDIRMA EKRANI */
+        /* 1. SAYFA İSKELETİNİ KESİN OLARAK KİLİTLE (Taşmayı Önle) */
+        html, body { 
+            width: 100vw !important;
+            max-width: 100% !important;
+            overflow-x: hidden !important; 
+            background-color: #F8FAFC; 
+            color: #0F172A; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /* 2. ÜST MENÜYÜN (NAVBAR) BÜZÜŞMESİNİ ENGELLE */
+        header {
+            width: 100% !important;
+            max-width: 100vw !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* 3. TABLOLARI KONTROL ALTINA AL (Sayfayı bozmadan kendi içinde kaydır) */
         .enterprise-card { 
             background: #FFFFFF; 
             border: 1px solid #E2E8F0; 
             border-radius: 12px; 
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); 
-            width: 100% !important;
+            
+            /* Sihirli dokunuş: Kartın genişliği asla ekranı aşamaz */
+            max-width: calc(100vw - 2rem) !important; 
+            display: block !important;
             overflow-x: auto !important; 
-            -webkit-overflow-scrolling: touch !important; /* iPhone'larda akıcı kaydırma için */
+            -webkit-overflow-scrolling: touch !important; 
         }
         
-        /* İçerik div veya table ise büzüşmesini kesin olarak yasakla */
+        /* Tablonun içeriği ezilmesin, 800px altına düşmesin */
         .enterprise-card > div, 
         .enterprise-card table {
             min-width: 800px !important; 
         }
+        
+        /* 4. ANİMASYONLAR */
+        .view-section { display: none; animation: fadeIn 0.3s ease-in-out forwards; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
         
         .dot-pulse { display: inline-block; width: 8px; height: 8px; background-color: #10B981; border-radius: 50%; box-shadow: 0 0 8px #10B981; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.1); } }
