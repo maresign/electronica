@@ -26,71 +26,63 @@
         }
     </script>
     <style>
-        /* 1. PAGE SKELETON */
-        html, body { 
-            width: 100%;
-            max-width: 100vw;
-            overflow-x: hidden; 
-            background-color: #F8FAFC; 
-            color: #0F172A; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        /* 2. PREVENT MAIN AREA OVERFLOW */
-        main, .flex-1 {
-            min-width: 0 !important;
-            width: 100% !important;
-        }
-
-        /* 3. TABLES (Scrollable without breaking the layout) */
-        .enterprise-card { 
-            background: #FFFFFF; 
-            border: 1px solid #E2E8F0; 
-            border-radius: 12px; 
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); 
-            width: 100% !important;
-            overflow-x: auto !important; 
-            -webkit-overflow-scrolling: touch !important; 
-        }
+        /* SADECE GEREKLİ ANİMASYONLAR (Sayfa kaydırmasını bozan kilitler tamamen kaldırıldı) */
+        body { background-color: #F8FAFC; color: #0F172A; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         
-        .enterprise-card table {
-            min-width: 800px !important; 
-        }
-        
-        /* 4. ANIMATIONS */
         .view-section { display: none; animation: fadeIn 0.3s ease-in-out forwards; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
         
         .dot-pulse { display: inline-block; width: 8px; height: 8px; background-color: #10B981; border-radius: 50%; box-shadow: 0 0 8px #10B981; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.1); } }
+
+        /* Kaydırma çubuğu makyajı */
+        ::-webkit-scrollbar { height: 6px; width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="antialiased">
+<body class="antialiased flex flex-col min-h-screen">
 
     <!-- TOP HEADER / NAVBAR -->
-    <header class="bg-black border-b border-slate-900 sticky top-0 z-40">
+    <header class="bg-black border-b border-slate-900 sticky top-0 z-50">
         <div class="max-w-[1600px] mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0">
             
-            <!-- LEFT SECTION: LOGO AND SIMULATION BADGE -->
-            <div class="flex flex-col md:flex-row items-center gap-3 md:gap-8 w-full md:w-auto justify-center md:justify-start">
-                <div class="flex items-center gap-3">
-                    <!-- LOCAL ASSET: Removed external raw github link for InfoSec compliance. Ensure logo is hosted locally. -->
-                    <img src="/assets/img/logo.png" onerror="this.outerHTML='<div class=\'flex items-center gap-2\'><div class=\'w-8 h-10 bg-blue-600 rounded flex items-center justify-center text-white font-bold\'>M</div><span class=\'text-white font-bold text-xl tracking-wide\'>maresign</span></div>'" alt="Maresign Logo" class="h-12 md:h-16 w-auto object-contain hover:scale-105 transition-transform cursor-pointer">
-                    <span class="px-2 py-0.5 bg-slate-800 text-slate-300 rounded text-[11px] font-semibold border border-slate-700 whitespace-nowrap">ENTERPRISE</span>
+            <!-- LEFT SECTION: HAMBURGER, LOGO & BADGE -->
+            <div class="flex items-center justify-between w-full md:w-auto">
+                <div class="flex items-center gap-4">
+                    <!-- Hamburger Menu Button (Mobil ve Masaüstü uyumlu) -->
+                    <button onclick="toggleSidebar()" class="text-slate-300 hover:text-white p-1 rounded-md focus:outline-none transition-colors">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </button>
+
+                    <!-- LOGO (Orijinal çalışan link geri getirildi) -->
+                    <div class="flex items-center gap-3">
+                        <img src="https://github.com/maresign/electronica/blob/main/maresign-yeni-logo.jpg?raw=true" alt="Maresign Logo" class="h-12 md:h-16 w-auto object-contain hover:scale-105 transition-transform cursor-pointer">
+                        <span class="px-2 py-0.5 bg-slate-800 text-slate-300 rounded text-[11px] font-semibold border border-slate-700 whitespace-nowrap">ENTERPRISE</span>
+                    </div>
                 </div>
-                
-                <div class="flex items-center gap-1.5 text-[10px] md:text-xs text-slate-400 font-medium mt-1 md:mt-0">
-                    <span class="font-mono text-amber-400 bg-amber-900/30 px-2 py-1 rounded border border-amber-800/50 font-bold flex items-center gap-1.5 shadow-[0_0_10px_rgba(251,191,36,0.2)]">
+
+                <!-- SİMÜLASYON BADGE (Mobilde sağ üstte durur) -->
+                <div class="md:hidden flex items-center gap-1.5 text-[10px] text-slate-400 font-medium">
+                    <span class="font-mono text-amber-400 bg-amber-900/30 px-2 py-1 rounded border border-amber-800/50 font-bold flex items-center gap-1.5">
                         <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-                        SIMULATION MODE
+                        SIMULATION
                     </span>
                 </div>
             </div>
 
+            <div class="hidden md:flex items-center gap-1.5 text-[10px] md:text-xs text-slate-400 font-medium mt-1 md:mt-0 mr-auto ml-8">
+                <span class="font-mono text-amber-400 bg-amber-900/30 px-2 py-1 rounded border border-amber-800/50 font-bold flex items-center gap-1.5 shadow-[0_0_10px_rgba(251,191,36,0.2)]">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                    SIMULATION MODE
+                </span>
+            </div>
+
             <!-- RIGHT SECTION: BUTTONS & PROFILE SWITCHER -->
             <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto justify-center md:justify-end">
-                <button onclick="openQRModal()" class="w-full sm:w-auto justify-center px-4 py-2.5 sm:py-2 text-xs font-semibold text-slate-300 border border-slate-700 rounded-lg hover:bg-slate-800 hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap">
+                <button onclick="openQRModal()" class="w-full sm:w-auto justify-center px-4 py-2 text-xs font-semibold text-slate-300 border border-slate-700 rounded-lg hover:bg-slate-800 hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap">
                     🔍 Customs / Auditor Verification
                 </button>
                 
@@ -107,89 +99,84 @@
                     </select>
                 </div>
             </div>
-            
         </div>
     </header>
 
-    <div class="max-w-[1600px] mx-auto px-6 py-8 flex gap-8">
+    <!-- MAIN LAYOUT WRAPPER -->
+    <div class="flex flex-1 max-w-[1600px] w-full mx-auto px-4 md:px-6 py-6 md:py-8 gap-8 relative">
         
-        <!-- SIDE NAVIGATION (DESKTOP) -->
-        <aside class="w-64 flex-shrink-0 hidden lg:block">
-            <nav class="space-y-6">
-                <div>
-                    <div class="px-3 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Title & Finance (MLETR)</div>
-                    <div class="space-y-1">
-                        <button onclick="switchTab('vault', this)" class="menu-item active w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg bg-corporate text-white transition-all">
-                            🚢 eBL Vault
-                        </button>
-                        <button onclick="switchTab('network', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
-                            🔒 Azure Ledger Network
-                        </button>
-                        <button onclick="switchTab('paper', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
-                            🖨️ ETDA Paper Archive
-                        </button>
-                    </div>
-                </div>
+        <!-- BACKDROP FOR MOBILE SIDEBAR -->
+        <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-30 hidden lg:hidden transition-opacity"></div>
 
-                <div>
-                    <div class="px-3 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Port & Operations (DCSA)</div>
-                    <div class="space-y-1">
-                        <button onclick="switchTab('dataroom', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
-                            📁 Shared Data Room
-                        </button>
-                        <button onclick="switchTab('templates', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
-                            📝 Document Generation
-                        </button>
+        <!-- COLLAPSIBLE SIDE NAVIGATION -->
+        <!-- Mobilde gizli ve soldan kayarak gelir, Masaüstünde her zaman görünür -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-[#F8FAFC] border-r border-slate-200 transform -translate-x-full lg:translate-x-0 lg:static lg:block transition-transform duration-300 ease-in-out h-full overflow-y-auto pt-24 lg:pt-0 shrink-0 shadow-2xl lg:shadow-none">
+            <div class="px-6 lg:px-0">
+                <nav class="space-y-6">
+                    <div>
+                        <div class="px-3 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Title & Finance (MLETR)</div>
+                        <div class="space-y-1">
+                            <button onclick="switchTab('vault', this)" class="menu-item active w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg bg-corporate text-white transition-all">
+                                🚢 eBL Vault
+                            </button>
+                            <button onclick="switchTab('network', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
+                                🔒 Azure Ledger Network
+                            </button>
+                            <button onclick="switchTab('paper', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
+                                🖨️ ETDA Paper Archive
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <div>
-                    <div class="px-3 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">System & Security</div>
-                    <div class="space-y-1">
-                        <button onclick="switchTab('kyc', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
-                            ⚙️ ArkSigner KYB Profile
-                        </button>
+                    <div>
+                        <div class="px-3 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Port & Operations (DCSA)</div>
+                        <div class="space-y-1">
+                            <button onclick="switchTab('dataroom', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
+                                📁 Shared Data Room
+                            </button>
+                            <button onclick="switchTab('templates', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
+                                📝 Document Generation
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </nav>
+
+                    <div>
+                        <div class="px-3 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">System & Security</div>
+                        <div class="space-y-1">
+                            <button onclick="switchTab('kyc', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
+                                ⚙️ ArkSigner KYB Profile
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+            </div>
         </aside>
 
-        <!-- MOBILE NAVIGATION SHORTCUT -->
-        <div class="lg:hidden w-full mb-6">
-            <select onchange="const option = this.options[this.selectedIndex]; switchTab(option.value, option);" class="w-full bg-white border border-slate-300 text-slate-700 text-sm font-semibold rounded-lg p-3 outline-none">
-                <option value="vault">🚢 eBL Vault</option>
-                <option value="network">🔒 Azure Ledger Network</option>
-                <option value="paper">🖨️ ETDA Paper Archive</option>
-                <option value="dataroom">📁 Shared Data Room</option>
-                <option value="templates">📝 Document Generation</option>
-                <option value="kyc">⚙️ ArkSigner KYB Profile</option>
-            </select>
-        </div>
-
         <!-- MAIN CONTENT AREA -->
-        <main class="flex-1 w-full">
+        <main class="flex-1 min-w-0">
             
             <!-- TAB 1: eBL VAULT -->
             <section id="view-vault" class="view-section active">
-                <div class="mb-6 flex justify-between items-end">
-                    <div>
-                        <h1 class="text-xl font-bold text-corporate">Documents Under Exclusive Control (MLETR)</h1>
-                        <p class="text-xs text-textMuted mt-1">Your digital title vault compliant with MLETR and UK ETDA 2023 standards.</p>
-                    </div>
+                <div class="mb-6">
+                    <h1 class="text-xl font-bold text-corporate">Documents Under Exclusive Control (MLETR)</h1>
+                    <p class="text-xs text-textMuted mt-1">Your digital title vault compliant with MLETR and UK ETDA 2023 standards.</p>
                 </div>
 
-                <div class="enterprise-card overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 border-b border-borderSlate text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                                <th class="p-4">Control Status</th>
-                                <th class="p-4">Document No & Standard</th>
-                                <th class="p-4">Cargo, Route & IoT</th>
-                                <th class="p-4 text-right">Actions (MLETR / Finance)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ebl-body" class="divide-y divide-borderSlate text-xs"></tbody>
-                    </table>
+                <!-- Tablonun taşmasını engelleyen temiz wrapper -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] w-full overflow-hidden">
+                    <div class="w-full overflow-x-auto">
+                        <table class="w-full min-w-[800px] text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                                    <th class="p-4">Control Status</th>
+                                    <th class="p-4">Document No & Standard</th>
+                                    <th class="p-4">Cargo, Route & IoT</th>
+                                    <th class="p-4 text-right">Actions (MLETR / Finance)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ebl-body" class="divide-y divide-slate-100 text-xs"></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
@@ -200,19 +187,21 @@
                     <p class="text-xs text-textMuted mt-1">Immutable WORM records securely locked within Azure Sweden Central (SGX Enclaves) environment.</p>
                 </div>
 
-                <div class="enterprise-card overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 border-b border-borderSlate text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                                <th class="p-4">ACL Receipt (Download JSON)</th>
-                                <th class="p-4">Timestamp</th>
-                                <th class="p-4">Document No</th>
-                                <th class="p-4">Action</th>
-                                <th class="p-4">SGX Enclave Log</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ledger-body" class="divide-y divide-borderSlate text-xs"></tbody>
-                    </table>
+                <div class="bg-white border border-slate-200 rounded-xl shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] w-full overflow-hidden">
+                    <div class="w-full overflow-x-auto">
+                        <table class="w-full min-w-[800px] text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                                    <th class="p-4">ACL Receipt (Download JSON)</th>
+                                    <th class="p-4">Timestamp</th>
+                                    <th class="p-4">Document No</th>
+                                    <th class="p-4">Action</th>
+                                    <th class="p-4">SGX Enclave Log</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ledger-body" class="divide-y divide-slate-100 text-xs"></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
@@ -223,18 +212,20 @@
                     <p class="text-xs text-textMuted mt-1">Documents whose electronic nature has legally ceased and converted to a physical copy.</p>
                 </div>
 
-                <div class="enterprise-card overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 border-b border-borderSlate text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                                <th class="p-4">eBL Number</th>
-                                <th class="p-4">Date of Conversion</th>
-                                <th class="p-4">Legal Status</th>
-                                <th class="p-4 text-right">Physical Document</th>
-                            </tr>
-                        </thead>
-                        <tbody id="paper-body" class="divide-y divide-borderSlate text-xs"></tbody>
-                    </table>
+                <div class="bg-white border border-slate-200 rounded-xl shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] w-full overflow-hidden">
+                    <div class="w-full overflow-x-auto">
+                        <table class="w-full min-w-[800px] text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                                    <th class="p-4">eBL Number</th>
+                                    <th class="p-4">Date of Conversion</th>
+                                    <th class="p-4">Legal Status</th>
+                                    <th class="p-4 text-right">Physical Document</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paper-body" class="divide-y divide-slate-100 text-xs"></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
@@ -245,19 +236,21 @@
                     <p class="text-xs text-textMuted mt-1">e-Sealed commercial documents and approval workflows related to the shipment.</p>
                 </div>
 
-                <div class="enterprise-card overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 border-b border-borderSlate text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                                <th class="p-4">Document Name</th>
-                                <th class="p-4">Uploader</th>
-                                <th class="p-4">Date</th>
-                                <th class="p-4">Security</th>
-                                <th class="p-4 text-right">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dataroom-body" class="divide-y divide-borderSlate text-xs"></tbody>
-                    </table>
+                <div class="bg-white border border-slate-200 rounded-xl shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] w-full overflow-hidden">
+                    <div class="w-full overflow-x-auto">
+                        <table class="w-full min-w-[800px] text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                                    <th class="p-4">Document Name</th>
+                                    <th class="p-4">Uploader</th>
+                                    <th class="p-4">Date</th>
+                                    <th class="p-4">Security</th>
+                                    <th class="p-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataroom-body" class="divide-y divide-slate-100 text-xs"></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
@@ -272,76 +265,58 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     
-                    <!-- 1. Electronic Bill of Lading -->
                     <div class="bg-white border border-slate-200 rounded-xl p-6 flex flex-col items-center text-center hover:shadow-lg hover:border-slate-300 transition-all group">
                         <div class="w-16 h-16 mb-4 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         </div>
                         <h3 class="text-sm font-bold text-slate-800 mb-1">Electronic Bill of Lading (eBL)</h3>
                         <p class="text-xs text-slate-500 mb-5 line-clamp-2">DCSA standard, CCF-based, tamper-evident digital title document.</p>
-                        <button onclick="openDocumentTemplate('Electronic Bill of Lading')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">
-                            Fill Template
-                        </button>
+                        <button onclick="openDocumentTemplate('Electronic Bill of Lading')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">Fill Template</button>
                     </div>
 
-                    <!-- 2. Commercial Invoice -->
                     <div class="bg-white border border-slate-200 rounded-xl p-6 flex flex-col items-center text-center hover:shadow-lg hover:border-slate-300 transition-all group">
                         <div class="w-16 h-16 mb-4 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                         </div>
                         <h3 class="text-sm font-bold text-slate-800 mb-1">Commercial Invoice</h3>
                         <p class="text-xs text-slate-500 mb-5 line-clamp-2">Standard international Commercial Invoice format for customs and L/C operations.</p>
-                        <button onclick="openDocumentTemplate('Commercial Invoice')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">
-                            Fill Template
-                        </button>
+                        <button onclick="openDocumentTemplate('Commercial Invoice')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">Fill Template</button>
                     </div>
 
-                    <!-- 3. Packing List -->
                     <div class="bg-white border border-slate-200 rounded-xl p-6 flex flex-col items-center text-center hover:shadow-lg hover:border-slate-300 transition-all group">
                         <div class="w-16 h-16 mb-4 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                         </div>
                         <h3 class="text-sm font-bold text-slate-800 mb-1">Packing List</h3>
                         <p class="text-xs text-slate-500 mb-5 line-clamp-2">Detailed list containing container payload distribution, weight, volume, and packaging.</p>
-                        <button onclick="openDocumentTemplate('Packing List')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">
-                            Fill Template
-                        </button>
+                        <button onclick="openDocumentTemplate('Packing List')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">Fill Template</button>
                     </div>
 
-                    <!-- 4. Cargo Manifest -->
                     <div class="bg-white border border-slate-200 rounded-xl p-6 flex flex-col items-center text-center hover:shadow-lg hover:border-slate-300 transition-all group">
                         <div class="w-16 h-16 mb-4 bg-cyan-50 text-cyan-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                         </div>
                         <h3 class="text-sm font-bold text-slate-800 mb-1">Cargo Manifest</h3>
                         <p class="text-xs text-slate-500 mb-5 line-clamp-2">Summary manifest document for the ship's master and port authorities.</p>
-                        <button onclick="openDocumentTemplate('Cargo Manifest')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">
-                            Fill Template
-                        </button>
+                        <button onclick="openDocumentTemplate('Cargo Manifest')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">Fill Template</button>
                     </div>
 
-                    <!-- 5. Certificate of Origin -->
                     <div class="bg-white border border-slate-200 rounded-xl p-6 flex flex-col items-center text-center hover:shadow-lg hover:border-slate-300 transition-all group">
                         <div class="w-16 h-16 mb-4 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
                         </div>
                         <h3 class="text-sm font-bold text-slate-800 mb-1">Certificate of Origin</h3>
                         <p class="text-xs text-slate-500 mb-5 line-clamp-2">Official chamber of commerce document proving the origin of the exported goods.</p>
-                        <button onclick="openDocumentTemplate('Certificate of Origin')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">
-                            Fill Template
-                        </button>
+                        <button onclick="openDocumentTemplate('Certificate of Origin')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">Fill Template</button>
                     </div>
 
-                    <!-- 6. Insurance Certificate -->
                     <div class="bg-white border border-slate-200 rounded-xl p-6 flex flex-col items-center text-center hover:shadow-lg hover:border-slate-300 transition-all group">
                         <div class="w-16 h-16 mb-4 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.618 5.984A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016zM12 9v2m0 4h.01"></path></svg>
                         </div>
                         <h3 class="text-sm font-bold text-slate-800 mb-1">Insurance Certificate</h3>
                         <p class="text-xs text-slate-500 mb-5 line-clamp-2">Insurance coverage document aligned with ICC clauses against transit damages.</p>
-                        <button onclick="openDocumentTemplate('Insurance Certificate')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">
-                            Fill Template
-                        </button>
+                        <button onclick="openDocumentTemplate('Insurance Certificate')" class="mt-auto w-full py-2 bg-slate-50 border border-slate-200 hover:bg-corporate hover:text-white text-slate-700 hover:border-corporate text-xs font-semibold rounded-lg transition-colors">Fill Template</button>
                     </div>
 
                 </div>
@@ -355,7 +330,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="enterprise-card p-6 border-t-4 border-t-corporate">
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 border-t-4 border-t-corporate shadow-sm">
                         <h3 class="font-bold text-corporate text-sm mb-4">🏢 Corporate Registry & Identity</h3>
                         <div class="space-y-3 text-xs">
                             <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-textMuted">Institution Name:</span> <span id="kyb-name" class="font-bold text-corporate"></span></div>
@@ -365,7 +340,7 @@
                         </div>
                     </div>
 
-                    <div class="enterprise-card p-6 border-t-4 border-t-purple-600">
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 border-t-4 border-t-purple-600 shadow-sm">
                         <h3 class="font-bold text-corporate text-sm mb-4">💳 Cryptographic Hardware & Azure</h3>
                         <div class="space-y-3 text-xs">
                             <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-textMuted">Certificate Authority:</span> <span class="font-bold text-corporate">ArkSigner CA</span></div>
@@ -481,6 +456,21 @@
             renderAll();
         }
 
+        // Sidebar animasyon motoru
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            
+            // Eğer mobildeysek
+            if(window.innerWidth < 1024) {
+                sidebar.classList.toggle('-translate-x-full');
+                backdrop.classList.toggle('hidden');
+            } else {
+                // Masaüstündeysek (Geniş ekranlarda menüyü sola doğru gizle/aç)
+                sidebar.classList.toggle('lg:hidden');
+            }
+        }
+
         function switchTab(viewName, element) {
             document.querySelectorAll('.menu-item').forEach(el => {
                 el.classList.remove('bg-corporate', 'text-white');
@@ -495,6 +485,13 @@
             if(document.getElementById('view-' + viewName)) {
                 document.getElementById('view-' + viewName).classList.add('active');
             }
+            
+            // Mobilde menüden seçim yapınca menüyü otomatik kapat
+            if(window.innerWidth < 1024) {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+                document.getElementById('sidebar-backdrop').classList.add('hidden');
+            }
+
             if(viewName === 'network') renderLedger();
         }
 
@@ -538,10 +535,10 @@
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50/80 transition-all">
-                        <td class="p-4">${statusHtml}</td>
-                        <td class="p-4"><strong class="text-corporate">${ebl.no}</strong><br><span class="text-[11px] text-textMuted font-mono">${ebl.type}</span></td>
-                        <td class="p-4"><span class="font-medium text-slate-700">${ebl.goods}</span><br><span class="text-[11px] text-textMuted">${ebl.route}</span></td>
-                        <td class="p-4 text-right">${actionHtml}</td>
+                        <td class="p-4 whitespace-nowrap">${statusHtml}</td>
+                        <td class="p-4 whitespace-nowrap"><strong class="text-corporate">${ebl.no}</strong><br><span class="text-[11px] text-textMuted font-mono">${ebl.type}</span></td>
+                        <td class="p-4 whitespace-nowrap"><span class="font-medium text-slate-700">${ebl.goods}</span><br><span class="text-[11px] text-textMuted">${ebl.route}</span></td>
+                        <td class="p-4 text-right whitespace-nowrap">${actionHtml}</td>
                     </tr>`;
             });
         }
@@ -554,11 +551,11 @@
             sharedDocuments.forEach(doc => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50/80">
-                        <td class="p-4 font-semibold text-corporate">${doc.name}</td>
-                        <td class="p-4 text-slate-600">${kybData[doc.uploader].name.split(' (')[0]}</td>
-                        <td class="p-4 text-slate-500">${doc.date}</td>
-                        <td class="p-4"><span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded text-[11px] font-semibold">✅ ArkSigner Sealed</span></td>
-                        <td class="p-4 text-right"><button onclick="viewDocumentTemplate('${doc.name}')" class="text-accentBlue hover:underline font-semibold">Review</button></td>
+                        <td class="p-4 font-semibold text-corporate whitespace-nowrap">${doc.name}</td>
+                        <td class="p-4 text-slate-600 whitespace-nowrap">${kybData[doc.uploader].name.split(' (')[0]}</td>
+                        <td class="p-4 text-slate-500 whitespace-nowrap">${doc.date}</td>
+                        <td class="p-4 whitespace-nowrap"><span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded text-[11px] font-semibold">✅ ArkSigner Sealed</span></td>
+                        <td class="p-4 text-right whitespace-nowrap"><button onclick="viewDocumentTemplate('${doc.name}')" class="text-accentBlue hover:underline font-semibold">Review</button></td>
                     </tr>`;
             });
         }
@@ -570,11 +567,11 @@
                 let tagClass = log.type.includes('Medium') ? 'bg-red-50 text-red-700 border-red-200' : 'bg-slate-100 text-slate-700 border-slate-200';
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50/80">
-                        <td class="p-4 font-mono text-purple-700 font-bold cursor-pointer hover:underline" onclick="makbuzIndir('${log.tx}', '${log.no}', '${log.type}')" title="Download Independent JSON Receipt">${log.tx} 📥</td>
-                        <td class="p-4 text-slate-500">${log.date}</td>
-                        <td class="p-4 font-semibold text-corporate">${log.no}</td>
-                        <td class="p-4"><span class="px-2 py-0.5 border rounded text-[11px] font-semibold ${tagClass}">${log.type}</span></td>
-                        <td class="p-4 text-slate-600">${log.msg}<br><span class="text-[10px] text-slate-400 font-mono">SGX Block: #${Math.floor(Math.random() * 899999 + 100000)}</span></td>
+                        <td class="p-4 font-mono text-purple-700 font-bold cursor-pointer hover:underline whitespace-nowrap" onclick="makbuzIndir('${log.tx}', '${log.no}', '${log.type}')" title="Download Independent JSON Receipt">${log.tx} 📥</td>
+                        <td class="p-4 text-slate-500 whitespace-nowrap">${log.date}</td>
+                        <td class="p-4 font-semibold text-corporate whitespace-nowrap">${log.no}</td>
+                        <td class="p-4 whitespace-nowrap"><span class="px-2 py-0.5 border rounded text-[11px] font-semibold ${tagClass}">${log.type}</span></td>
+                        <td class="p-4 text-slate-600 whitespace-nowrap">${log.msg}<br><span class="text-[10px] text-slate-400 font-mono">SGX Block: #${Math.floor(Math.random() * 899999 + 100000)}</span></td>
                     </tr>`;
             });
         }
@@ -587,10 +584,10 @@
             burnedDocs.forEach(ebl => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50/80">
-                        <td class="p-4 font-bold text-corporate">${ebl.no}</td>
-                        <td class="p-4 text-slate-500">${ebl.burnDate}</td>
-                        <td class="p-4"><span class="px-2 py-0.5 bg-red-50 text-red-700 border border-red-200 rounded text-[11px] font-semibold">Electronic Nature Ceased</span></td>
-                        <td class="p-4 text-right"><button onclick="alert('Printing physical copy...')" class="px-3 py-1 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded text-xs font-semibold">🖨️ Print (PDF)</button></td>
+                        <td class="p-4 font-bold text-corporate whitespace-nowrap">${ebl.no}</td>
+                        <td class="p-4 text-slate-500 whitespace-nowrap">${ebl.burnDate}</td>
+                        <td class="p-4 whitespace-nowrap"><span class="px-2 py-0.5 bg-red-50 text-red-700 border border-red-200 rounded text-[11px] font-semibold">Electronic Nature Ceased</span></td>
+                        <td class="p-4 text-right whitespace-nowrap"><button onclick="alert('Printing physical copy...')" class="px-3 py-1 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded text-xs font-semibold">🖨️ Print (PDF)</button></td>
                     </tr>`;
             });
         }
