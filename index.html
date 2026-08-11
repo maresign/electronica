@@ -394,27 +394,76 @@
         </div>
     </div>
 
-    <!-- MODAL: QR VERIFY -->
-    <div id="qrModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 text-center">
-            <h2 class="text-base font-bold text-corporate mb-1">Customs / Auditor Verification</h2>
-            <p class="text-xs text-textMuted mb-4">Querying Azure Confidential Ledger Merkle Proof...</p>
+    <!-- MODAL: QR VERIFY (YENİ NESİL SİBER GÜVENLİK KONSEPTİ) -->
+    <div id="qrModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 transition-all">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-200 text-center relative overflow-hidden">
+            
+            <!-- Üst Dekorasyon -->
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-emerald-500 to-purple-600"></div>
 
-            <div id="qr-scanner-anim" class="w-40 h-40 mx-auto border-2 border-corporate rounded-lg relative overflow-hidden bg-slate-50 mb-4 flex items-center justify-center">
-                <span class="text-3xl">🏁</span>
-                <div class="w-full h-0.5 bg-emerald-500 absolute top-0 shadow-[0_0_8px_#10B981] animate-[scan_2s_linear_infinite]"></div>
-            </div>
+            <h2 class="text-lg font-extrabold text-corporate mb-1">Auditor Verification</h2>
+            <p id="qr-status-text" class="text-xs text-textMuted mb-6 font-mono">Querying Azure SGX Enclaves...</p>
 
-            <div id="qr-result" class="hidden bg-emerald-50 border border-emerald-200 p-3 rounded-lg text-left text-xs mb-4">
-                <div class="font-bold text-emerald-800 mb-1">✅ ACL WORM Record Validated</div>
-                <div class="text-slate-600 space-y-1 text-[11px]">
-                    <div><strong>Endpoint:</strong> maresign-ledger-swe</div>
-                    <div><strong>Current Possession:</strong> <span id="qr-owner" class="text-corporate font-semibold"></span></div>
-                    <div><strong>Merkle Root:</strong> <span class="font-mono text-purple-700">0x9A2F...C881</span></div>
+            <!-- 1. YENİ ANİMASYON: Şifreleme ve Ağ Taraması -->
+            <div id="qr-scanner-anim" class="w-48 h-48 mx-auto relative mb-6 flex items-center justify-center">
+                <!-- Dış dönen halka -->
+                <div class="absolute inset-0 border-4 border-dashed border-slate-200 rounded-full animate-[spin_4s_linear_infinite]"></div>
+                <div class="absolute inset-2 border-4 border-t-emerald-500 border-r-transparent border-b-emerald-500 border-l-transparent rounded-full animate-[spin_2s_linear_infinite]"></div>
+                
+                <!-- Merkezdeki Kalkan ve Kilit İkonu -->
+                <div class="z-10 text-emerald-600 bg-emerald-50 p-4 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                </div>
+
+                <!-- Tarama Lazer Çizgisi -->
+                <div class="absolute top-0 left-0 w-full h-0.5 bg-emerald-400 shadow-[0_0_10px_#34d399] animate-[scan_1.5s_ease-in-out_infinite]"></div>
+                
+                <!-- Sahte Hex Kodları (Matrix efekti) -->
+                <div class="absolute bottom-2 left-0 w-full text-[8px] font-mono text-emerald-600/50 truncate px-4">
+                    0x9A2F... validating hash...
                 </div>
             </div>
 
-            <button onclick="document.getElementById('qrModal').style.display='none'" class="w-full py-2 border border-slate-300 text-slate-600 font-semibold rounded-lg text-xs hover:bg-slate-50">Close</button>
+            <!-- 2. YENİ SONUÇ EKRANI: Gümrük ve Banka İçin İdeal Veriler -->
+            <div id="qr-result" class="hidden text-left mb-6">
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-3">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white text-xs">✓</div>
+                        <h3 class="font-bold text-emerald-800 text-sm">Valid Physical Title</h3>
+                    </div>
+                    
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between border-b border-emerald-100 pb-1">
+                            <span class="text-emerald-700/70">Document No:</span>
+                            <span id="qr-doc-no" class="font-bold text-emerald-900">MRS-2026-TR-...</span>
+                        </div>
+                        <div class="flex justify-between border-b border-emerald-100 pb-1">
+                            <span class="text-emerald-700/70">Legal Status:</span>
+                            <span class="font-bold text-red-600">ELECTRONIC NATURE CEASED</span>
+                        </div>
+                        <div class="flex justify-between border-b border-emerald-100 pb-1">
+                            <span class="text-emerald-700/70">Digital Twin:</span>
+                            <span class="font-bold text-emerald-900">Destroyed (Paper Fallback)</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-emerald-700/70">Authorized By:</span>
+                            <span id="qr-owner" class="font-bold text-emerald-900 truncate max-w-[120px]">Maresign Exporters</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACL Merkle Proof Kutusu -->
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-[10px] font-mono text-slate-500">
+                    <div class="flex justify-between mb-1"><span>Ledger:</span> <span class="text-purple-600 font-bold">Azure SGX (Sweden)</span></div>
+                    <div class="flex justify-between"><span>Merkle Root:</span> <span class="text-slate-700 truncate ml-2">0x9A2F8B4C...C8819D2A</span></div>
+                </div>
+            </div>
+
+            <button onclick="document.getElementById('qrModal').classList.add('hidden')" class="w-full py-2.5 bg-slate-100 text-slate-700 font-bold rounded-lg text-xs hover:bg-slate-200 transition-colors border border-slate-300">
+                Close Verification
+            </button>
         </div>
     </div>
 
@@ -625,11 +674,22 @@
         }
 
         function openQRModal() {
-            document.getElementById('qrModal').style.display = 'flex';
+            document.getElementById('qrModal').classList.remove('hidden');
             document.getElementById('qr-scanner-anim').style.display = 'flex';
             document.getElementById('qr-result').style.display = 'none';
-            document.getElementById('qr-owner').innerText = kybData[eblDatabase[0].owner].name.split(' (')[0];
-            setTimeout(() => { document.getElementById('qr-scanner-anim').style.display = 'none'; document.getElementById('qr-result').style.display = 'block'; }, 1500);
+            document.getElementById('qr-status-text').innerText = "Querying Azure SGX Enclaves...";
+            
+            // URL'deki belge numarasını yakala ve ekrana yaz
+            const urlParams = new URLSearchParams(window.location.search);
+            const docId = urlParams.get('doc') || 'TEST-DOC-001';
+            document.getElementById('qr-doc-no').innerText = docId;
+            document.getElementById('qr-owner').innerText = kybData[activeAccount].name.split(' (')[0];
+            
+            setTimeout(() => { 
+                document.getElementById('qr-scanner-anim').style.display = 'none'; 
+                document.getElementById('qr-result').style.display = 'block'; 
+                document.getElementById('qr-status-text').innerText = "Cryptographic Proof Verified";
+            }, 1800);
         }
 
         function startAction(action, dataId) {
