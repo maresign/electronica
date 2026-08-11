@@ -444,7 +444,18 @@
         ];
         let ledgerDatabase = [];
 
-        window.onload = () => { changeAccount('shipper'); };
+        window.onload = () => { 
+            changeAccount('shipper'); 
+            
+            // Eğer URL'de bir belge numarası varsa (QR kod okutulup gelindiyse)
+            const urlParams = new URLSearchParams(window.location.search);
+            if(urlParams.has('doc')) {
+                // Sayfa yüklendikten yarım saniye sonra doğrulama radarını otomatik aç
+                setTimeout(() => {
+                    openQRModal();
+                }, 500);
+            }
+        };
 
         function changeAccount(roleKey) {
             activeAccount = roleKey;
