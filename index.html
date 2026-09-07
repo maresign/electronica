@@ -3,9 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maresign - Enterprise Trade & Trust Gateway</title>
+    <title>Maresign - Enterprise Trade &amp; Trust Gateway</title>
+    <meta name="description" content="Maresign Enterprise Trade &amp; Trust Gateway — MLETR/ETDA uyumlu eBL zilyetlik vitrini ve Maritime Trust Gateway doğrulama laboratuvarı (Ar-Ge, TRL 3). Simülasyon ortamı.">
+    <meta name="theme-color" content="#0A2540">
+    <meta property="og:title" content="Maresign — Enterprise Trade &amp; Trust Gateway">
+    <meta property="og:description" content="MLETR/ETDA uyumlu eBL vitrini + tarayıcı içinde çalışan bağımsız eBL doğrulama laboratuvarı (Deney 01, TRL 3).">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230A2540'/%3E%3Cpath d='M32 12a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm-3 12h6v24h-6z' fill='%2300A3E0'/%3E%3Cpath d='M14 34c0 10 8 18 18 18s18-8 18-18' stroke='%2300A3E0' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M22 26h20' stroke='%2300A3E0' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- mtg-verify: in-browser verification engine (Experiment 01 · TRL 3). No data leaves the page. -->
+    <script defer src="mtg-verify.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -36,6 +44,15 @@
         .dot-pulse { display: inline-block; width: 8px; height: 8px; background-color: #10B981; border-radius: 50%; box-shadow: 0 0 8px #10B981; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.1); } }
 
+        /* Mobil: açık menü altındaki gövde kaymasın */
+        body.sidebar-open { overflow: hidden; }
+        /* Tablolarda dokunmatik yatay kaydırma akıcı olsun */
+        .overflow-x-auto { -webkit-overflow-scrolling: touch; }
+        /* Toast */
+        #toast-wrap { position: fixed; left: 50%; transform: translateX(-50%); bottom: 20px; z-index: 60; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+        .toast { background: #0A2540; color: #fff; font-size: 12px; padding: 10px 14px; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.25); max-width: 92vw; opacity: 0; transform: translateY(8px); transition: all .25s ease; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
         /* Kaydırma çubuğu makyajı */
         ::-webkit-scrollbar { height: 6px; width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
@@ -47,28 +64,28 @@
 
     <!-- TOP HEADER / NAVBAR -->
     <header class="bg-black border-b border-slate-900 sticky top-0 z-50">
-        <div class="max-w-[1600px] mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0">
+        <div class="max-w-[1600px] mx-auto px-3 sm:px-4 py-2.5 md:py-4 flex flex-col md:flex-row items-center justify-between gap-2 md:gap-0">
             
             <!-- LEFT SECTION: HAMBURGER, LOGO & BADGE -->
-            <div class="flex items-center justify-between w-full md:w-auto">
-                <div class="flex items-center gap-4">
+            <div class="flex items-center justify-between w-full md:w-auto gap-2">
+                <div class="flex items-center gap-2 sm:gap-4 min-w-0">
                     <!-- Hamburger Menu Button (Mobil ve Masaüstü uyumlu) -->
                     <button onclick="toggleSidebar()" class="text-slate-300 hover:text-white p-1 rounded-md focus:outline-none transition-colors">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                        <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
 
                     <!-- LOGO (Orijinal çalışan link geri getirildi) -->
-                    <div class="flex items-center gap-3">
-                        <img src="https://github.com/maresign/electronica/blob/main/maresign-yeni-logo.jpg?raw=true" alt="Maresign Logo" class="h-12 md:h-16 w-auto object-contain hover:scale-105 transition-transform cursor-pointer">
-                        <span class="px-2 py-0.5 bg-slate-800 text-slate-300 rounded text-[11px] font-semibold border border-slate-700 whitespace-nowrap">ENTERPRISE</span>
+                    <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                        <img src="maresign-yeni-logo.jpg" alt="Maresign" width="180" height="72" class="h-9 sm:h-12 md:h-16 w-auto object-contain hover:scale-105 transition-transform cursor-pointer">
+                        <span class="hidden sm:inline px-2 py-0.5 bg-slate-800 text-slate-300 rounded text-[11px] font-semibold border border-slate-700 whitespace-nowrap">ENTERPRISE</span>
                     </div>
                 </div>
 
                 <!-- SİMÜLASYON BADGE (Mobilde sağ üstte durur) -->
-                <div class="md:hidden flex items-center gap-1.5 text-[10px] text-slate-400 font-medium">
-                    <span class="font-mono text-amber-400 bg-amber-900/30 px-2 py-1 rounded border border-amber-800/50 font-bold flex items-center gap-1.5">
+                <div class="md:hidden flex items-center gap-1.5 text-[10px] text-slate-400 font-medium shrink-0">
+                    <span class="font-mono text-amber-400 bg-amber-900/30 px-1.5 py-1 rounded border border-amber-800/50 font-bold flex items-center gap-1">
                         <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-                        SIMULATION
+                        SIM
                     </span>
                 </div>
             </div>
@@ -81,14 +98,14 @@
             </div>
 
             <!-- RIGHT SECTION: BUTTONS & PROFILE SWITCHER -->
-            <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto justify-center md:justify-end">
-                <button onclick="openQRModal()" class="w-full sm:w-auto justify-center px-4 py-2 text-xs font-semibold text-slate-300 border border-slate-700 rounded-lg hover:bg-slate-800 hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap">
-                    🔍 Customs / Auditor Verification
+            <div class="flex flex-row items-center gap-2 sm:gap-3 w-full md:w-auto justify-between md:justify-end">
+                <button onclick="openQRModal()" class="flex-1 md:flex-none justify-center px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-xs font-semibold text-slate-300 border border-slate-700 rounded-lg hover:bg-slate-800 hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap">
+                    🔍 <span class="hidden sm:inline">Customs / Auditor </span>Verification
                 </button>
                 
                 <div class="hidden sm:block h-8 w-px bg-slate-800"></div>
                 
-                <div class="w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-900 p-2 sm:p-1.5 rounded-lg border border-slate-800">
+                <div class="flex-1 md:flex-none min-w-0 flex items-center justify-center gap-2 bg-slate-900 p-1.5 rounded-lg border border-slate-800">
                     <span class="dot-pulse ml-1 shrink-0"></span>
                     <select id="account-switcher" onchange="changeAccount(this.value)" class="bg-transparent text-xs font-bold text-slate-200 outline-none cursor-pointer pr-2 w-full text-center sm:text-left truncate">
                         <option value="shipper" class="bg-slate-900 text-slate-200">Maresign Exporters (Shipper)</option>
@@ -110,7 +127,7 @@
 
         <!-- COLLAPSIBLE SIDE NAVIGATION -->
         <!-- Mobilde gizli ve soldan kayarak gelir, Masaüstünde her zaman görünür -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-[#F8FAFC] border-r border-slate-200 transform -translate-x-full lg:translate-x-0 lg:static lg:block transition-transform duration-300 ease-in-out h-full overflow-y-auto pt-24 lg:pt-0 shrink-0 shadow-2xl lg:shadow-none">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-[#F8FAFC] border-r border-slate-200 transform -translate-x-full lg:translate-x-0 lg:static lg:block transition-transform duration-300 ease-in-out h-full overflow-y-auto pt-24 lg:!pt-0 shrink-0 shadow-2xl lg:shadow-none">
             <div class="px-6 lg:px-0">
                 <nav class="space-y-6">
                     <div>
@@ -120,7 +137,7 @@
                                 🚢 eBL Vault
                             </button>
                             <button onclick="switchTab('network', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
-                                🔒 Azure Ledger Network
+                                🔒 Confidential Ledger Network
                             </button>
                             <button onclick="switchTab('paper', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
                                 🖨️ ETDA Paper Archive
@@ -136,6 +153,15 @@
                             </button>
                             <button onclick="switchTab('templates', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
                                 📝 Document Generation
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="px-3 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">R&amp;D · Maritime Trust Gateway</div>
+                        <div class="space-y-1">
+                            <button onclick="switchTab('lab', this)" class="menu-item w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all">
+                                🧪 Verification Lab <span class="ml-auto text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 border border-emerald-200 whitespace-nowrap">TRL 3</span>
                             </button>
                         </div>
                     </div>
@@ -183,8 +209,8 @@
             <!-- TAB 2: LEDGER -->
             <section id="view-network" class="view-section">
                 <div class="mb-6">
-                    <h1 class="text-xl font-bold text-corporate">🔒 Azure Confidential Ledger (ACL Audit Trace)</h1>
-                    <p class="text-xs text-textMuted mt-1">Immutable WORM records securely locked within Azure Sweden Central (SGX Enclaves) environment.</p>
+                    <h1 class="text-xl font-bold text-corporate">🔒 Confidential Ledger — Audit Trace (WORM)</h1>
+                    <p class="text-xs text-textMuted mt-1">Immutable WORM records in a hardware-isolated confidential ledger (TEE/SGX). Region is configurable; sovereign Türkiye region in the pilot deployment.</p>
                 </div>
 
                 <div class="bg-white border border-slate-200 rounded-xl shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] w-full overflow-hidden">
@@ -326,7 +352,7 @@
             <section id="view-kyc" class="view-section">
                 <div class="mb-6">
                     <h1 class="text-xl font-bold text-corporate">⚙️ ArkSigner KYB Profile</h1>
-                    <p class="text-xs text-textMuted mt-1">Cryptographic identity details of the current session, validated by ArkSigner (CA).</p>
+                    <p class="text-xs text-textMuted mt-1">Cryptographic identity details of the current session. <strong>Simulated view:</strong> in production these values come from ArkSigner (QES/e-seal issuer); no live certificate is queried on this page. Real cryptographic verification runs in the <button onclick="switchTab('lab', document.querySelector('.menu-item[onclick*=lab]'))" class="underline font-semibold text-accentBlue">Verification Lab</button>.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -336,20 +362,79 @@
                             <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-textMuted">Institution Name:</span> <span id="kyb-name" class="font-bold text-corporate"></span></div>
                             <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-textMuted">System Role:</span> <span id="kyb-role" class="font-bold text-accentBlue"></span></div>
                             <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-textMuted">Tax ID / Registry:</span> <span id="kyb-mersis" class="font-bold text-corporate"></span></div>
-                            <div class="flex justify-between py-2"><span class="text-textMuted">Corporate Validation:</span> <span class="font-bold text-emerald-600">✅ Qualified e-Seal (eIDAS)</span></div>
+                            <div class="flex justify-between py-2"><span class="text-textMuted">Corporate Validation:</span> <span class="font-bold text-emerald-600">✅ Qualified e-Seal (eIDAS)</span> <span class="text-[10px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 ml-1">simulated</span></div>
                         </div>
                     </div>
 
                     <div class="bg-white border border-slate-200 rounded-xl p-6 border-t-4 border-t-purple-600 shadow-sm">
                         <h3 class="font-bold text-corporate text-sm mb-4">💳 Cryptographic Hardware & Azure</h3>
                         <div class="space-y-3 text-xs">
-                            <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-textMuted">Certificate Authority:</span> <span class="font-bold text-corporate">ArkSigner CA</span></div>
-                            <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-textMuted">Ledger Endpoint:</span> <span class="font-mono text-purple-700 font-bold">maresign-ledger-swe</span></div>
+                            <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-textMuted">Certificate Authority:</span> <span class="font-bold text-corporate">ArkSigner CA</span> <span class="text-[10px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 ml-1">simulated</span></div>
+                            <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-textMuted">Ledger Endpoint:</span> <span class="font-mono text-purple-700 font-bold">maresign-ledger-tr</span> <span class="text-[10px] text-textMuted font-normal">(sovereign region · simulated)</span></div>
                             <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-textMuted">Hardware Security:</span> <span id="kyb-hw" class="font-bold text-corporate"></span></div>
                         </div>
-                        <button onclick="alert('Azure Confidential Ledger Enclave nodes in Sweden Central are active and responding.')" class="w-full mt-6 py-2 border border-purple-300 text-purple-700 hover:bg-purple-50 text-xs font-bold rounded-lg transition-all">
+                        <button onclick="toast('Confidential ledger enclave nodes are active and responding (simulated response).')" class="w-full mt-6 py-2 border border-purple-300 text-purple-700 hover:bg-purple-50 text-xs font-bold rounded-lg transition-all">
                             Ping ACL Hardware Node
                         </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 7: VERIFICATION LAB (Experiment 01 · TRL 3 · real cryptography, runs entirely in the browser) -->
+            <section id="view-lab" class="view-section">
+                <div class="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4">
+                    <div class="flex flex-wrap items-start justify-between gap-3">
+                        <div class="max-w-4xl">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="text-[10px] uppercase tracking-wider text-emerald-700 font-bold" data-i18n="eyebrow"></span>
+                                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white text-emerald-700 border border-emerald-300">NOT SIMULATION — REAL CRYPTOGRAPHY</span>
+                                <span class="inline-flex rounded-md border border-slate-300 overflow-hidden text-[10px] font-bold ml-auto md:ml-2"><button class="lab-lang px-2 py-0.5" data-lang="tr">TR</button><button class="lab-lang px-2 py-0.5" data-lang="en">EN</button></span>
+                            </div>
+                            <h1 class="text-lg font-bold text-corporate mt-1" data-i18n="title"></h1>
+                            <p class="text-xs text-slate-700 mt-1" data-i18n="intro"></p>
+                        </div>
+                        <div class="text-[10px] text-slate-600 bg-white border border-slate-200 rounded-lg px-3 py-2 leading-relaxed max-w-sm">
+                            <div>⚙ <span id="lab-engine" class="font-mono">mtg-verify</span></div>
+                            <div class="mt-1" data-i18n="limits"></div>
+                            <div class="mt-1" data-i18n="cross"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-12 gap-4 lg:gap-6">
+                    <div class="lg:col-span-4 space-y-4 min-w-0">
+                        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                            <h3 class="text-xs font-bold text-corporate mb-3">📋 <span data-i18n="cases"></span> <span class="font-normal text-textMuted" data-i18n="casesSub"></span></h3>
+                            <div id="lab-cases" class="space-y-2"></div>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                            <h3 class="text-xs font-bold text-corporate mb-2">📤 <span data-i18n="own"></span></h3>
+                            <div id="lab-drop" class="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center text-[11px] text-textMuted transition">
+                                <span data-i18n="drop"></span>
+                                <div class="mt-2"><input type="file" id="lab-file" accept=".json,application/json" class="block w-full text-[11px] text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-corporate file:text-white hover:file:bg-corporateHover"></div>
+                            </div>
+                            <label class="flex items-start gap-2 mt-3 text-[11px] text-slate-600"><input type="checkbox" id="lab-dns-live" class="mt-0.5 rounded"> <span data-i18n="liveDns"></span></label>
+                            <p class="text-[10px] text-slate-400 mt-2" data-i18n="noPii"></p>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-8 space-y-4 min-w-0">
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                            <div id="lab-result" class="text-sm"></div>
+                        </div>
+                        <div id="lab-evidence" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hidden">
+                            <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+                                <h3 class="text-xs font-bold text-corporate">🗄 <span data-i18n="evTitle"></span> <span class="font-normal text-textMuted" data-i18n="evSub"></span></h3>
+                                <div class="flex flex-wrap gap-2">
+                                    <button id="lab-btn-evidence" class="bg-corporate hover:bg-corporateHover text-white text-[11px] px-3 py-2 rounded-md font-semibold transition"></button>
+                                    <span id="lab-evidence-actions" class="hidden flex flex-wrap gap-2">
+                                        <button id="lab-btn-tamper" class="bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 text-[11px] px-3 py-2 rounded-md font-semibold transition">🐞 <span data-i18n="btnTamper"></span></button>
+                                        <button id="lab-btn-download" class="bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 text-[11px] px-3 py-2 rounded-md font-semibold transition">⬇ <span data-i18n="btnDownload"></span></button>
+                                        <button id="lab-btn-report" class="bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 text-[11px] px-3 py-2 rounded-md font-semibold transition">⬇ <span data-i18n="btnReport"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div id="lab-seals" class="text-sm"></div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -364,7 +449,7 @@
             <div id="template-content" class="bg-slate-50 p-6 rounded-lg border border-slate-200 mb-6 font-serif text-xs text-slate-800 leading-relaxed"></div>
             <div id="template-action-area" class="flex gap-3 justify-end">
                 <button id="btn-template-cancel" onclick="document.getElementById('templateModal').style.display='none'" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg text-xs font-semibold hover:bg-slate-50">Cancel</button>
-                <button id="btn-template-sign" onclick="signAndShareDocument()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold">💳 Sign with QES & Publish</button>
+                <button id="btn-template-sign" onclick="signAndShareDocument()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold">💳 Sign with QES &amp; Publish <span class="opacity-70 font-normal">(simulated)</span></button>
             </div>
         </div>
     </div>
@@ -402,7 +487,7 @@
             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-emerald-500 to-purple-600"></div>
 
             <h2 class="text-lg font-extrabold text-corporate mb-1">Auditor Verification</h2>
-            <p id="qr-status-text" class="text-xs text-textMuted mb-6 font-mono">Querying Azure SGX Enclaves...</p>
+            <p id="qr-status-text" class="text-xs text-textMuted mb-6 font-mono">Querying confidential ledger enclaves...</p>
 
             <!-- 1. YENİ ANİMASYON: Şifreleme ve Ağ Taraması -->
             <div id="qr-scanner-anim" class="w-48 h-48 mx-auto relative mb-6 flex items-center justify-center">
@@ -456,7 +541,7 @@
 
                 <!-- ACL Merkle Proof Kutusu -->
                 <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-[10px] font-mono text-slate-500">
-                    <div class="flex justify-between mb-1"><span>Ledger:</span> <span class="text-purple-600 font-bold">Azure SGX (Sweden)</span></div>
+                    <div class="flex justify-between mb-1"><span>Ledger:</span> <span class="text-purple-600 font-bold">Confidential (TEE) · TR</span></div>
                     <div class="flex justify-between"><span>Merkle Root:</span> <span class="text-slate-700 truncate ml-2">0x9A2F8B4C...C8819D2A</span></div>
                 </div>
             </div>
@@ -495,6 +580,7 @@
 
         window.onload = () => { 
             changeAccount('shipper'); 
+            syncSidebarOffset();
             
             // Eğer URL'de bir belge numarası varsa (QR kod okutulup gelindiyse)
             const urlParams = new URLSearchParams(window.location.search);
@@ -503,6 +589,11 @@
                 setTimeout(() => {
                     openQRModal();
                 }, 500);
+            }
+            // #lab ile gelindiyse Doğrulama Laboratuvarı sekmesini aç (komisyon sunumu için doğrudan bağlantı)
+            if(window.location.hash === '#lab') {
+                const btn = Array.from(document.querySelectorAll('.menu-item')).find(b => (b.getAttribute('onclick') || '').includes("'lab'"));
+                switchTab('lab', btn);
             }
         };
 
@@ -517,14 +608,45 @@
         }
 
         // Sidebar animasyon motoru
+        // --- Toast (alert() yerine; alert sunum sırasında sekmeyi kilitliyordu) ---
+        function toast(msg, ms) {
+            const wrap = document.getElementById('toast-wrap');
+            if (!wrap) { console.log(msg); return; }
+            const el = document.createElement('div');
+            el.className = 'toast'; el.textContent = msg;
+            wrap.appendChild(el);
+            requestAnimationFrame(() => el.classList.add('show'));
+            setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, ms || 3200);
+        }
+
+        // --- Mobil: yan menünün üst boşluğunu başlığın gerçek yüksekliğine bağla ---
+        // (sabit pt-24 = 96px idi; mobil başlık ~177px olduğu için ilk menü satırları başlığın altında kalıyordu)
+        function syncSidebarOffset() {
+            const header = document.querySelector('header');
+            const sidebar = document.getElementById('sidebar');
+            if (!header || !sidebar) return;
+            if (window.innerWidth < 1024) {
+                sidebar.style.paddingTop = (header.offsetHeight + 16) + 'px';
+            } else {
+                sidebar.style.paddingTop = '';
+                document.body.classList.remove('sidebar-open');
+                document.getElementById('sidebar-backdrop').classList.add('hidden');
+                sidebar.classList.add('-translate-x-full');
+            }
+        }
+        window.addEventListener('resize', syncSidebarOffset);
+        window.addEventListener('orientationchange', () => setTimeout(syncSidebarOffset, 150));
+
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const backdrop = document.getElementById('sidebar-backdrop');
             
             // Eğer mobildeysek
             if(window.innerWidth < 1024) {
-                sidebar.classList.toggle('-translate-x-full');
-                backdrop.classList.toggle('hidden');
+                syncSidebarOffset();
+                const acikMi = !sidebar.classList.toggle('-translate-x-full'); // sınıf eklendiyse kapandı
+                backdrop.classList.toggle('hidden', !acikMi);
+                document.body.classList.toggle('sidebar-open', acikMi);
             } else {
                 // Masaüstündeysek (Geniş ekranlarda menüyü sola doğru gizle/aç)
                 sidebar.classList.toggle('lg:hidden');
@@ -550,7 +672,10 @@
             if(window.innerWidth < 1024) {
                 document.getElementById('sidebar').classList.add('-translate-x-full');
                 document.getElementById('sidebar-backdrop').classList.add('hidden');
+                document.body.classList.remove('sidebar-open');
             }
+            // Sekme değişince sayfayı başa al (mobilde uzun sekmeden kısa sekmeye geçerken kayma hissi veriyordu)
+            if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: 'instant' in document.documentElement.style ? 'instant' : 'auto' });
 
             if(viewName === 'network') renderLedger();
         }
@@ -647,7 +772,7 @@
                         <td class="p-4 font-bold text-corporate whitespace-nowrap">${ebl.no}</td>
                         <td class="p-4 text-slate-500 whitespace-nowrap">${ebl.burnDate}</td>
                         <td class="p-4 whitespace-nowrap"><span class="px-2 py-0.5 bg-red-50 text-red-700 border border-red-200 rounded text-[11px] font-semibold">Electronic Nature Ceased</span></td>
-                        <td class="p-4 text-right whitespace-nowrap"><button onclick="alert('Printing physical copy...')" class="px-3 py-1 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded text-xs font-semibold">🖨️ Print (PDF)</button></td>
+                        <td class="p-4 text-right whitespace-nowrap"><button onclick="toast('Printing physical copy… (simulated)')" class="px-3 py-1 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded text-xs font-semibold">🖨️ Print (PDF)</button></td>
                     </tr>`;
             });
         }
@@ -677,7 +802,7 @@
             document.getElementById('qrModal').classList.remove('hidden');
             document.getElementById('qr-scanner-anim').style.display = 'flex';
             document.getElementById('qr-result').style.display = 'none';
-            document.getElementById('qr-status-text').innerText = "Querying Azure SGX Enclaves...";
+            document.getElementById('qr-status-text').innerText = "Querying confidential ledger enclaves...";
             
             // URL'deki belge numarasını yakala ve ekrana yaz
             const urlParams = new URLSearchParams(window.location.search);
@@ -752,7 +877,7 @@
 
                 pb.style.width = '60%';
                 await addLog("> Signature Successful! (Qualified e-Seal Validated)", 20, 'text-emerald-400 font-bold');
-                await addLog("> Establishing secure connection to Azure Sweden Central Enclaves...", 15, 'text-purple-400');
+                await addLog("> Establishing secure connection to confidential ledger enclaves (TR region)...", 15, 'text-purple-400');
                 
                 lastCreatedAclTx = 'ACL-WORM-' + Math.random().toString(36).substr(2, 10).toUpperCase();
 
@@ -772,7 +897,7 @@
                 await new Promise(resolve => { signPromiseResolver = resolve; });
 
                 pb.style.width = '60%';
-                await addLog("> Appending payment proof to Azure Confidential Ledger...", 15, 'text-purple-400');
+                await addLog("> Appending payment proof to the confidential ledger...", 15, 'text-purple-400');
                 
                 lastCreatedAclTx = 'ACL-WORM-' + Math.random().toString(36).substr(2, 10).toUpperCase();
 
@@ -818,11 +943,11 @@
             const receiptData = {
                 "ReceiptID": transactionId,
                 "Timestamp": new Date().toISOString(),
-                "LedgerEndpoint": "maresign-ledger-swe.confidential-ledger.azure.com",
+                "LedgerEndpoint": "maresign-ledger-tr.confidential-ledger (simulated)",
                 "DocumentNo": belgeNo,
                 "ActionType": islemTipi,
                 "Status": "LOCKED_IMMUTABLE_WORM",
-                "Verification": "Azure SGX Confidential Enclave Merkle Proof Validated"
+                "Verification": "Confidential enclave (TEE) Merkle proof validated — SIMULATED"
             };
             const dataStr = JSON.stringify(receiptData, null, 2);
             const blob = new Blob([dataStr], { type: "application/json" });
@@ -836,5 +961,7 @@
             URL.revokeObjectURL(url);
         }
     </script>
+    <div id="toast-wrap" aria-live="polite"></div>
+
 </body>
 </html>
