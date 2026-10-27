@@ -245,16 +245,15 @@
   try {
     if (window.__msPhoneHeader) return; window.__msPhoneHeader = true;
     var css = '@media (max-width:767px){' +
-      '.ms-hd-left{flex-direction:column!important;align-items:flex-start!important;gap:2px!important}' +
-      '.ms-hd-left>button{order:2;margin-left:0!important;padding:6px 4px!important}' +
-      '.ms-hd-left>div{margin-left:0!important}' +
+      '.ms-hd-left{gap:8px!important}.ms-hd-left>div>span{display:inline-block!important}' +
       'header img[alt="Maresign"]{height:108px!important}' +
       '.ms-hd-right{flex-direction:column!important;align-items:stretch!important;gap:8px!important}' +
       '.ms-hd-right>*{flex:none!important;width:100%!important}' +
       '.ms-hd-right>.w-px{display:none!important}' +
-      '.ms-hd-bar{align-items:flex-start!important}}' +
+      '.ms-hd-bar{align-items:center!important}}' +
       /* desktop/tablet: logo far left, menu button between logo and DEMO badge, on the badge's line */
-      '@media (min-width:768px){.ms-hd-left{align-items:center!important}.ms-hd-left>div{display:contents}.ms-hd-left img[alt="Maresign"]{order:1}.ms-hd-left>button{order:2}.ms-hd-left>div>span{order:3}}';
+      /* all widths: logo far left, menu button between logo and DEMO badge, on the badge's line */
+      '.ms-hd-left{flex-direction:row!important;align-items:center!important}.ms-hd-left>div{display:contents}.ms-hd-left img[alt="Maresign"]{order:1}.ms-hd-left>button{order:2}.ms-hd-left>div>span{order:3}';
     var st = document.createElement('style'); st.id = 'ms-phone-header'; st.textContent = css; document.head.appendChild(st);
     function tag() {
       var burger = document.querySelector('header button[onclick="toggleSidebar()"]');
