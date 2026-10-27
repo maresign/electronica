@@ -50,7 +50,11 @@
     var st = document.createElement('style'); st.id = 'ms-icons-style';
     st.textContent = '.ms-ic{width:1.25em;height:1.25em;display:inline-block;vertical-align:-0.25em;flex:none}' +
       'h1 .ms-ic,h2 .ms-ic{width:1.15em;height:1.15em;vertical-align:-0.18em}' +
-      '.menu-item .ms-ic,#ws-nav .ms-ic{width:17px;height:17px;opacity:.9}';
+      '.menu-item .ms-ic,#ws-nav .ms-ic{width:17px;height:17px;opacity:.9}' +
+      /* header fix: on tablets / phones in landscape the long SIMULATION MODE badge collided with the buttons */
+      'header .mr-auto.ml-8>span{white-space:nowrap}' +
+      '@media (min-width:768px) and (max-width:1199px){header .mr-auto.ml-8{margin-left:10px!important;flex-shrink:0}header .mr-auto.ml-8>span{font-size:10px!important;padding:3px 6px!important}}' +
+      '@media (min-width:768px) and (max-width:959px){header button[onclick="openQRModal()"] span{display:none!important}header #account-switcher{max-width:190px}}';
     document.head.appendChild(st);
 
     var keys = Object.keys(MAP).sort(function (a, b) { return b.length - a.length; });
@@ -114,7 +118,8 @@
         var r = rules[i];
         if (r.type === 1 && r.style && r.style.fontSize) {
           var n = px(r.style.fontSize); if (n == null) continue;
-          out.push(r.selectorText + '{font-size:' + (Math.round((n + BUMP) * 100) / 100) + 'px' + (r.style.getPropertyPriority('font-size') ? ' !important' : '') + '}');
+          var sel = r.selectorText.indexOf('::') < 0 ? ':is(' + r.selectorText + '):not(header *)' : r.selectorText; // top bar keeps its original sizes so badges do not collide
+          out.push(sel + '{font-size:' + (Math.round((n + BUMP) * 100) / 100) + 'px' + (r.style.getPropertyPriority('font-size') ? ' !important' : '') + '}');
         } else if (r.type === 4 && r.cssRules) {
           var inner = []; walk(r.cssRules, inner);
           if (inner.length) out.push('@media ' + r.media.mediaText + '{' + inner.join('') + '}');
@@ -123,7 +128,7 @@
     }
     var last = '';
     function build() {
-      var out = ['body{font-size:' + (16 + BUMP) + 'px}'];
+      var out = ['body{font-size:' + (16 + BUMP) + 'px}', 'header{font-size:16px}'];
       for (var i = 0; i < document.styleSheets.length; i++) {
         var sh = document.styleSheets[i];
         if (sh.ownerNode === tag) continue;
