@@ -252,7 +252,9 @@
       '.ms-hd-right{flex-direction:column!important;align-items:stretch!important;gap:8px!important}' +
       '.ms-hd-right>*{flex:none!important;width:100%!important}' +
       '.ms-hd-right>.w-px{display:none!important}' +
-      '.ms-hd-bar{align-items:flex-start!important}}';
+      '.ms-hd-bar{align-items:flex-start!important}}' +
+      /* desktop/tablet: logo far left, menu button between logo and DEMO badge, on the badge's line */
+      '@media (min-width:768px){.ms-hd-left{align-items:center!important}.ms-hd-left>div{display:contents}.ms-hd-left img[alt="Maresign"]{order:1}.ms-hd-left>button{order:2}.ms-hd-left>div>span{order:3}}';
     var st = document.createElement('style'); st.id = 'ms-phone-header'; st.textContent = css; document.head.appendChild(st);
     function tag() {
       var burger = document.querySelector('header button[onclick="toggleSidebar()"]');
