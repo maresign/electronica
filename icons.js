@@ -198,3 +198,42 @@
     if (window.console) console.warn('[icons.js phone ux] disabled:', err);
   }
 })();
+
+/* ---- Layout fixes from the device audit + larger logo (27 Oct 2026) ---- */
+(function () {
+  'use strict';
+  try {
+    if (window.__msLayoutFix) return; window.__msLayoutFix = true;
+    var css =
+      /* menu labels: left aligned like the others even when they wrap to two lines */
+      '#sidebar .menu-item,#ws-nav button{text-align:left!important;line-height:1.3}' +
+      /* logo x2: was 36 / 48 / 64 px (phone / small tablet / desktop) */
+      'header img[alt="Maresign"]{height:72px!important;width:auto!important}' +
+      '@media (min-width:640px){header img[alt="Maresign"]{height:96px!important}}' +
+      '@media (min-width:768px){header img[alt="Maresign"]{height:128px!important}}' +
+      /* phones: nothing wider than the screen, comfortable tap targets */
+      'main select{max-width:100%}' +
+      '@media (max-width:640px){#ws-rulefor{width:100%}' +
+      'main .view-section button:not(.chip),main .view-section select{min-height:34px}' +
+      'main .view-section a.underline,main .view-section button.underline{display:inline-block;padding:6px 0}}' +
+      /* phones/tablets: hide the Watchkeeper button while the side menu is open so it does not cover menu items */
+      '@media (max-width:1023px){body.ms-sb-open #wk-fab{display:none!important}}';
+    var st = document.createElement('style'); st.id = 'ms-layout-fix'; st.textContent = css;
+    document.head.appendChild(st);
+    /* the mobile side menu slides in under the header: keep its first item clear of the taller header */
+    function syncSidebar() {
+      var h = document.querySelector('header'), sb = document.getElementById('sidebar');
+      if (!h || !sb) return;
+      sb.style.paddingTop = window.innerWidth < 1024 ? (h.offsetHeight + 12) + 'px' : '';
+    }
+    function watchSidebar() {
+      var sb = document.getElementById('sidebar'); if (!sb) return;
+      var upd = function () { document.body.classList.toggle('ms-sb-open', !sb.classList.contains('-translate-x-full')); };
+      upd(); new MutationObserver(upd).observe(sb, { attributes: true, attributeFilter: ['class'] });
+    }
+    function start() { syncSidebar(); watchSidebar(); window.addEventListener('resize', syncSidebar); window.addEventListener('load', syncSidebar); setTimeout(syncSidebar, 800); }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  } catch (err) {
+    if (window.console) console.warn('[icons.js layout fix] disabled:', err);
+  }
+})();
