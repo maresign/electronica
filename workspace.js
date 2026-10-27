@@ -101,17 +101,17 @@
     ];
     var STATES = ['DRAFT', 'ISSUED', 'TRANSFERRED', 'SURRENDER_REQUESTED', 'DELIVERED', 'AMEND_REQUESTED', 'SWITCHED_TO_PAPER', 'VOID'];
     var RULES = [
-      ['DRAFT', 'ISSUED', 'Issuer (carrier / transport operator)', 'Qualified e-seal', 'Art. 10 (singularity, integrity)', 'Art. 3 (issuance), Art. 12'],
-      ['ISSUED', 'TRANSFERRED', 'Current holder', 'Qualified e-signature', 'Art. 11 (control), Art. 15 (endorsement)', 'Art. 11 (transfer), Art. 15–16'],
-      ['TRANSFERRED', 'TRANSFERRED', 'Current holder', 'Qualified e-signature', 'Art. 11, Art. 15', 'Art. 11, Art. 16'],
-      ['ISSUED', 'SURRENDER_REQUESTED', 'Holder at destination', 'Qualified e-signature', 'Art. 11', 'Art. 10 (delivery)'],
-      ['TRANSFERRED', 'SURRENDER_REQUESTED', 'Holder at destination', 'Qualified e-signature', 'Art. 11', 'Art. 10 (delivery)'],
-      ['SURRENDER_REQUESTED', 'DELIVERED', 'Issuer', 'Qualified e-seal', 'Art. 11', 'Art. 10'],
-      ['ISSUED', 'AMEND_REQUESTED', 'Holder', 'Qualified e-signature', 'Art. 16 (amendment)', 'not addressed'],
-      ['AMEND_REQUESTED', 'ISSUED', 'Issuer (re-issues)', 'Qualified e-seal', 'Art. 16', 'Art. 3'],
-      ['ISSUED', 'SWITCHED_TO_PAPER', 'Holder + issuer', 'Qualified e-signature + e-seal', 'Art. 18 (change of medium)', 'Art. 17 (change of medium)'],
-      ['TRANSFERRED', 'SWITCHED_TO_PAPER', 'Holder + issuer', 'Qualified e-signature + e-seal', 'Art. 18', 'Art. 17'],
-      ['DRAFT', 'VOID', 'Issuer', 'Qualified e-seal', '—', '—']
+      ['DRAFT', 'ISSUED', 'Issuer (carrier / transport operator)', 'Qualified e-seal', 'Art. 10 (singularity, integrity)', 'Art. 3 (issuance), Art. 12', 's.2 (qualifying document: integrity, exclusive control, reliable system)'],
+      ['ISSUED', 'TRANSFERRED', 'Current holder', 'Qualified e-signature', 'Art. 11 (control), Art. 15 (endorsement)', 'Art. 11 (transfer), Art. 15–16', 's.3 (possession, indorsement)'],
+      ['TRANSFERRED', 'TRANSFERRED', 'Current holder', 'Qualified e-signature', 'Art. 11, Art. 15', 'Art. 11, Art. 16', 's.3'],
+      ['ISSUED', 'SURRENDER_REQUESTED', 'Holder at destination', 'Qualified e-signature', 'Art. 11', 'Art. 10 (delivery)', 's.3 (parting with possession)'],
+      ['TRANSFERRED', 'SURRENDER_REQUESTED', 'Holder at destination', 'Qualified e-signature', 'Art. 11', 'Art. 10 (delivery)', 's.3 (parting with possession)'],
+      ['SURRENDER_REQUESTED', 'DELIVERED', 'Issuer', 'Qualified e-seal', 'Art. 11', 'Art. 10', 's.3 (effect)'],
+      ['ISSUED', 'AMEND_REQUESTED', 'Holder', 'Qualified e-signature', 'Art. 16 (amendment)', 'not addressed', 'not addressed'],
+      ['AMEND_REQUESTED', 'ISSUED', 'Issuer (re-issues)', 'Qualified e-seal', 'Art. 16', 'Art. 3', 's.2'],
+      ['ISSUED', 'SWITCHED_TO_PAPER', 'Holder + issuer', 'Qualified e-signature + e-seal', 'Art. 18 (change of medium)', 'Art. 17 (change of medium)', 's.4 (change of form)'],
+      ['TRANSFERRED', 'SWITCHED_TO_PAPER', 'Holder + issuer', 'Qualified e-signature + e-seal', 'Art. 18', 'Art. 17', 's.4'],
+      ['DRAFT', 'VOID', 'Issuer', 'Qualified e-seal', '—', '—', '—']
     ];
     var ACTIONS = {
       DRAFT: [['ISSUED', 'Issue (e-seal)'], ['VOID', 'Void draft']],
@@ -171,7 +171,7 @@
 
       '<section id="view-ws-rule" class="view-section ws"><h1>⚖️ Smart Rulebook (smart contract)</h1><p class="sub">The smart contract of the workspace, run on permissioned infrastructure instead of a public chain. It defines which state an eBL can move to, who may sign each step and which legal provision the rule mirrors. The engine refuses any step the contract does not define. Every executed step is meant to be sealed with a qualified e-signature or e-seal (Law No. 5070); here the signatures are simulated, the rule enforcement and hashes are real.</p>' +
       '<div class="card"><div class="row" style="margin-bottom:8px">Highlight for: <select id="ws-rulefor"></select></div><div style="overflow-x:auto" id="ws-rulesvg"></div></div>' +
-      '<div class="card sec" style="overflow-x:auto"><table style="min-width:760px"><thead><tr><th>Rule</th><th>From → To</th><th>Who may act</th><th>Signature</th><th>MLETR</th><th>NCD Convention</th></tr></thead><tbody id="ws-rulebody"></tbody></table></div>' +
+      '<div class="card sec" style="overflow-x:auto"><table style="min-width:900px"><thead><tr><th>Rule</th><th>From → To</th><th>Who may act</th><th>Signature</th><th>MLETR</th><th>NCD Convention</th><th>UK ETDA 2023</th></tr></thead><tbody id="ws-rulebody"></tbody></table></div>' +
       '<div class="card sec"><div class="row between"><h3 style="margin:0">Contract definition</h3><span class="sub" style="margin:0">Contract ID = SHA-256 of this definition. Change one character and the ID changes.</span></div><div class="hash sec" id="ws-cid" style="margin-top:8px"></div><div id="ws-canc" style="margin-top:6px"></div><pre id="ws-spec" style="margin:10px 0 0;max-height:260px;overflow:auto;background:#0f172a;color:#e2e8f0;border-radius:10px;padding:12px;font-size:11.5px;line-height:1.45"></pre></div>' +
       '<div class="card sec" style="overflow-x:auto"><h3>Execution log</h3><table style="min-width:700px"><thead><tr><th>Time</th><th>Document</th><th>Rule</th><th>Step</th><th>Result</th><th>Evidence hash</th></tr></thead><tbody id="ws-exec"></tbody></table><p class="sub" style="margin:8px 0 0">Run an action in Shipments to see it here. Steps the contract does not allow are recorded as rejected.</p></div></section>' +
 
@@ -317,7 +317,7 @@
       STATES.forEach(function (k) { var x = P[k][0], y = P[k][1], on = k === st; svg += '<rect x="' + x + '" y="' + y + '" width="' + W + '" height="' + H + '" rx="10" fill="' + (on ? '#0A2540' : '#fff') + '" stroke="' + (on ? '#0A2540' : '#cbd5e1') + '" stroke-width="1.5"/><text x="' + (x + W / 2) + '" y="' + (y + 27) + '" text-anchor="middle" font-size="12" font-weight="700" fill="' + (on ? '#fff' : '#0F172A') + '">' + pretty(k) + '</text>'; });
       svg += '<text x="20" y="30" font-size="12" fill="#64748B">Current state of the selected document is filled. Each arrow = one signed transition.</text></svg>';
       q('#ws-rulesvg').innerHTML = svg;
-      q('#ws-rulebody').innerHTML = RULES.map(function (r, i) { return '<tr' + (r[0] === st ? ' style="background:#f0f9ff"' : '') + '><td><b>R' + (i + 1) + '</b></td><td><b>' + pretty(r[0]) + '</b> → ' + pretty(r[1]) + '</td><td>' + esc(r[2]) + '</td><td>' + esc(r[3]) + '</td><td>' + esc(r[4]) + '</td><td>' + esc(r[5]) + '</td></tr>'; }).join('');
+      q('#ws-rulebody').innerHTML = RULES.map(function (r, i) { return '<tr' + (r[0] === st ? ' style="background:#f0f9ff"' : '') + '><td><b>R' + (i + 1) + '</b></td><td><b>' + pretty(r[0]) + '</b> → ' + pretty(r[1]) + '</td><td>' + esc(r[2]) + '</td><td>' + esc(r[3]) + '</td><td>' + esc(r[4]) + '</td><td>' + esc(r[5]) + '</td><td>' + esc(r[6]) + '</td></tr>'; }).join('');
       q('#ws-spec').textContent = contractSpec;
       q('#ws-cid').textContent = 'contract id (sha-256) ' + (contractId || '…');
       if (contractId) { q('#ws-canc').innerHTML = anchorHtml(contractId); wireAnchors('#ws-canc', renderRule); }
@@ -327,10 +327,10 @@
     }
     // machine-readable contract definition (its hash is the contract id)
     var contractSpec = JSON.stringify({
-      contract: 'maresign.ebl-rulebook', version: '0.1.0', mode: 'simulation',
-      legalBasis: ['UNCITRAL MLETR', 'UN Convention on Negotiable Cargo Documents', 'Law No. 5070 (TR e-signature)', 'HMK m.205/2'],
+      contract: 'maresign.ebl-rulebook', version: '0.2.0', mode: 'simulation',
+      legalBasis: ['UNCITRAL MLETR', 'UN Convention on Negotiable Cargo Documents', 'UK Electronic Trade Documents Act 2023', 'Law No. 5070 (TR e-signature)', 'HMK m.205/2'],
       states: STATES,
-      rules: RULES.map(function (r, i) { return { id: 'R' + (i + 1), from: r[0], to: r[1], actor: r[2], signature: r[3], mletr: r[4], ncd: r[5] }; }),
+      rules: RULES.map(function (r, i) { return { id: 'R' + (i + 1), from: r[0], to: r[1], actor: r[2], signature: r[3], mletr: r[4], ncd: r[5], ukEtda2023: r[6] }; }),
       default: 'deny'
     }, null, 2);
     var contractId = '';
