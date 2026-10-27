@@ -152,3 +152,49 @@
     if (window.console) console.warn('[icons.js font bump] disabled:', err);
   }
 })();
+
+/* ---- Phone portrait: full "SIMULATION MODE" label + one-time landscape hint (27 Oct 2026) ---- */
+(function () {
+  'use strict';
+  try {
+    if (window.__msPhoneUx) return; window.__msPhoneUx = true;
+    function labelFix() {
+      var badge = document.querySelector('header .md\\:hidden span.font-mono');
+      if (!badge) return;
+      for (var i = 0; i < badge.childNodes.length; i++) {
+        var n = badge.childNodes[i];
+        if (n.nodeType === 3 && /\bSIM\b/.test(n.nodeValue) && !/SIMULATION/.test(n.nodeValue)) n.nodeValue = n.nodeValue.replace(/\bSIM\b/, 'SIMULATION MODE');
+      }
+      badge.style.whiteSpace = 'nowrap';
+    }
+    var TR = (navigator.language || '').toLowerCase().indexOf('tr') === 0;
+    var KEY = 'ms-landscape-hint-v1';
+    function seen() { try { return localStorage.getItem(KEY) === '1'; } catch (e) { return false; } }
+    function remember() { try { localStorage.setItem(KEY, '1'); } catch (e) {} }
+    function isPhonePortrait() { return window.matchMedia('(max-width: 640px) and (orientation: portrait)').matches; }
+    function hint() {
+      if (seen() || !isPhonePortrait()) return;
+      var st = document.createElement('style');
+      st.textContent = '#ms-rot{position:fixed;left:12px;right:12px;bottom:76px;z-index:60;background:#0A2540;color:#fff;border-radius:14px;padding:14px 14px 12px;box-shadow:0 12px 32px rgba(10,37,64,.35);font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;display:flex;gap:12px;align-items:flex-start;animation:msrot .25s ease-out}' +
+        '#ms-rot svg{width:34px;height:34px;flex:none;margin-top:2px}#ms-rot b{display:block;font-size:15px;margin-bottom:2px}' +
+        '#ms-rot button{margin-top:10px;border:0;border-radius:8px;background:#fff;color:#0A2540;font-weight:700;padding:7px 14px;font-size:13px;cursor:pointer}' +
+        '@keyframes msrot{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}';
+      document.head.appendChild(st);
+      var box = document.createElement('div'); box.id = 'ms-rot'; box.setAttribute('role', 'status');
+      box.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2.5" width="10" height="17" rx="2"/><path d="M11 17h2"/><path d="M3 15.5a8.5 8.5 0 0 0 6 6"/><path d="M7.2 21.9 9 21.5l-.4-1.8"/><rect x="13.5" y="13" width="8" height="5.5" rx="1" opacity=".5"/></svg>' +
+        '<div><b>' + (TR ? 'Daha rahat kullanım için' : 'For the best experience') + '</b>' +
+        (TR ? 'Tablolar ve sevkiyat ekranları geniş. Telefonunuzu yatay çevirirseniz platform daha rahat okunur.' : 'Tables and shipment screens are wide. Turn your phone sideways for easier reading.') +
+        '<br><button type="button">' + (TR ? 'Tamam' : 'Got it') + '</button></div>';
+      document.body.appendChild(box);
+      function close() { remember(); if (box.parentNode) box.parentNode.removeChild(box); window.removeEventListener('resize', onRot); }
+      function onRot() { if (!isPhonePortrait()) close(); }
+      box.querySelector('button').onclick = close;
+      window.addEventListener('resize', onRot);
+      setTimeout(close, 12000);
+    }
+    function start() { labelFix(); setTimeout(hint, 1200); }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  } catch (err) {
+    if (window.console) console.warn('[icons.js phone ux] disabled:', err);
+  }
+})();
