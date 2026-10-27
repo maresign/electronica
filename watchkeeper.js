@@ -1,5 +1,5 @@
 /*!
- * watchkeeper.js v0.2 - Watchkeeper assistant panel for platform.maresign.com
+ * watchkeeper.js v0.3 - Watchkeeper assistant panel for platform.maresign.com
  * Installed by ONE deferred script line in index.html. Roll back: delete that line.
  * Talks only to the Maresign proxy (form.maresign.com/watchkeeper), which holds the API key.
  * Explains and suggests; never runs an action. Conversation lives in memory only.
@@ -48,7 +48,10 @@
       '#wk-in{flex:1;border:1px solid #E2E8F0;border-radius:10px;padding:9px 11px;font:inherit;resize:none;height:40px;max-height:110px}' +
       '#wk-send{border:0;border-radius:10px;background:#0A2540;color:#fff;font-weight:700;padding:0 14px;cursor:pointer}#wk-send[disabled]{opacity:.45;cursor:default}' +
       '#wk-panel .ft{font-size:10.5px;color:#64748B;text-align:center;padding:0 10px 8px;background:#fff}' +
-      '@media (max-width:640px){#wk-panel{right:12px;left:12px;width:auto;bottom:72px;height:calc(100vh - 100px)}#wk-fab{right:12px;bottom:14px}}';
+      '@media (max-width:640px){#wk-panel{top:0;right:0;bottom:0;left:0;width:100%;max-width:none;height:100%;height:100dvh;max-height:none;border:0;border-radius:0;z-index:2147483000}' +
+      '#wk-panel .hd{padding-top:max(12px,env(safe-area-inset-top))}#wk-form{padding-bottom:max(10px,env(safe-area-inset-bottom))}' +
+      '#wk-in{font-size:16px}#wk-chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:10px;-webkit-overflow-scrolling:touch}#wk-chips button{white-space:nowrap;flex:none}' +
+      '#wk-panel .x{font-size:26px;padding:0 4px}#wk-fab{right:12px;bottom:14px}body.wk-open #wk-fab{display:none}body.wk-open{overflow:hidden}}';
     var st = document.createElement('style'); st.id = 'wk-style'; st.textContent = css; document.head.appendChild(st);
 
     var fab = document.createElement('button'); fab.id = 'wk-fab'; fab.type = 'button';
@@ -88,7 +91,7 @@
       var b = e.target.closest('.go'); if (!b) return;
       var v = b.getAttribute('data-v'), nb = navBtn(v);
       if (nb) nb.click(); else if (typeof window.switchTab === 'function') window.switchTab(v, null);
-      if (window.innerWidth < 640) p.classList.remove('on');
+      if (window.innerWidth < 640) setOpen(false);
     });
 
     function context() {
@@ -126,8 +129,9 @@
     }
     $('#wk-form').addEventListener('submit', function (e) { e.preventDefault(); var v = $('#wk-in').value; $('#wk-in').value = ''; ask(v); });
     $('#wk-in').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('#wk-form').requestSubmit ? $('#wk-form').requestSubmit() : $('#wk-send').click(); } });
-    fab.onclick = function () { p.classList.toggle('on'); if (p.classList.contains('on')) $('#wk-in').focus(); };
-    $('#wk-x').onclick = function () { p.classList.remove('on'); };
+    function setOpen(on) { p.classList.toggle('on', on); document.body.classList.toggle('wk-open', on); if (on && window.innerWidth >= 640) $('#wk-in').focus(); }
+    fab.onclick = function () { setOpen(!p.classList.contains('on')); };
+    $('#wk-x').onclick = function () { setOpen(false); };
     setLang(lang);
   } catch (err) {
     if (window.console) console.warn('[watchkeeper.js] disabled:', err);
