@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>platform.maresign · Sesli tur / Guided tour</title>
+<title>platform.maresign · Guided tour</title>
 <meta name="description" content="A narrated tour of platform.maresign: electronic bills of lading, the Sovereign Bottleneck, the Smart Rulebook, Bitcoin anchoring and Watchkeeper. Turkish and English.">
 <style>
 :root{--navy:#0A2540;--ink:#0F172A;--muted:#64748B;--line:#E2E8F0;--accent:#00A3E0;--amber:#F59E0B;--green:#059669;--purple:#7C3AED;--red:#DC2626}
@@ -59,8 +59,8 @@ h2{font-size:clamp(18px,3vw,38px)}
     <div class="cap" id="cap" aria-live="polite"></div>
     <div class="start" id="start">
       <img class="logo" src="maresign-yeni-logo.jpg" alt="Maresign">
-      <button id="go">▶ Turu başlat / Start tour</button>
-      <p id="startNote">~3 dk · sesli anlatım ve altyazı · Simülasyon platformu<br>~3 min · narrated with captions · Simulation platform</p>
+      <button id="go">▶ Start the tour</button>
+      <p id="startNote">~3 min · narrated with captions · simulation platform</p>
     </div>
   </div>
   <div class="ctrl">
@@ -70,8 +70,8 @@ h2{font-size:clamp(18px,3vw,38px)}
     <div class="dots" id="dots"></div>
     <span class="sp"></span>
     <button id="mute" aria-label="Sound">🔊</button>
-    <button data-l="tr" class="lang on">TR</button>
-    <button data-l="en" class="lang">EN</button>
+    <button data-l="en" class="lang on">EN</button>
+    <button data-l="tr" class="lang">TR</button>
   </div>
 </div>
 <script>
@@ -172,7 +172,7 @@ var S = [
  }
 ];
 
-var lang = (navigator.language||'').toLowerCase().indexOf('tr')===0 ? 'tr' : 'en';
+var lang = 'en'; // English by default, like the platform UI; Turkish via the TR button or ?lang=tr
 try { var q = new URLSearchParams(location.search).get('lang'); if (q==='tr'||q==='en') lang=q; } catch(e){}
 var cur = 0, playing = false, muted = false, timer = null, token = 0;
 var $ = function(id){return document.getElementById(id);};

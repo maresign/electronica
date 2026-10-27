@@ -284,7 +284,7 @@
       var a = document.createElement('a'); a.id = 'ms-tour'; a.href = 'tour.html';
       a.style.cssText = 'display:flex;align-items:center;gap:10px;margin:0 0 18px;padding:10px 12px;border-radius:12px;background:#0A2540;color:#fff;text-decoration:none;font-weight:700;box-shadow:0 6px 18px rgba(10,37,64,.18)';
       a.innerHTML = '<span style="width:30px;height:30px;border-radius:50%;background:#00A3E0;display:flex;align-items:center;justify-content:center;flex:none"><svg viewBox="0 0 24 24" width="14" height="14" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span>' +
-        '<span style="line-height:1.2">' + (tr ? 'Sesli platform turu' : 'Guided platform tour') + '<br><span style="font-weight:500;opacity:.75;font-size:.85em">' + (tr ? '3 dk · TR / EN' : '3 min · EN / TR') + '</span></span>';
+        '<span style="line-height:1.2">Guided platform tour<br><span style="font-weight:500;opacity:.75;font-size:.85em">3 min · narrated</span></span>'; // English like the rest of the platform UI
       nav.insertBefore(a, nav.firstChild);
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', add); else add();
