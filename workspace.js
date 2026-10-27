@@ -155,7 +155,7 @@
     grp.innerHTML = '<div class="px-3 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Shipment Workspace</div><div class="space-y-1">' +
       '<button data-ws="ws-ship" class="' + BTN + '">📦 Shipments <span class="ws new">NEW</span></button>' +
       '<button data-ws="ws-env" class="' + BTN + '">✉️ Envelopes <span class="ws new">NEW</span></button>' +
-      '<button data-ws="ws-rule" class="' + BTN + '">⚖️ Rulebook <span class="ws new">NEW</span></button>' +
+      '<button data-ws="ws-rule" class="' + BTN + '">⚖️ Smart Rulebook <span class="ws new">NEW</span></button>' +
       '<button data-ws="ws-verify" class="' + BTN + '">✅ Public Verification <span class="ws new">NEW</span></button></div>';
     // place before the "R&D" group (third group) if present, else at end
     var groups = nav.children;
@@ -169,9 +169,11 @@
       '<div class="card"><div class="row between" style="margin-bottom:10px"><div class="tabs" id="ws-envtabs"></div><div class="row"><select id="ws-envtype"></select><input type="text" id="ws-envq" placeholder="Search subject, party, no."></div></div>' +
       '<div style="overflow-x:auto"><table style="min-width:700px"><thead><tr><th>From / To</th><th>Subject</th><th>Attachments</th><th>Status</th><th>Date</th></tr></thead><tbody id="ws-envbody"></tbody></table></div></div></section>' +
 
-      '<section id="view-ws-rule" class="view-section ws"><h1>⚖️ Rulebook (state machine)</h1><p class="sub">The "smart contract" of the workspace: which state an eBL can move to, who may sign the step, and which legal provision the rule mirrors. Each transition is meant to be sealed with a qualified e-signature or e-seal (Law No. 5070). Here: simulated.</p>' +
+      '<section id="view-ws-rule" class="view-section ws"><h1>⚖️ Smart Rulebook (smart contract)</h1><p class="sub">The smart contract of the workspace, run on permissioned infrastructure instead of a public chain. It defines which state an eBL can move to, who may sign each step and which legal provision the rule mirrors. The engine refuses any step the contract does not define. Every executed step is meant to be sealed with a qualified e-signature or e-seal (Law No. 5070); here the signatures are simulated, the rule enforcement and hashes are real.</p>' +
       '<div class="card"><div class="row" style="margin-bottom:8px">Highlight for: <select id="ws-rulefor"></select></div><div style="overflow-x:auto" id="ws-rulesvg"></div></div>' +
-      '<div class="card sec" style="overflow-x:auto"><table style="min-width:760px"><thead><tr><th>From → To</th><th>Who may act</th><th>Signature</th><th>MLETR</th><th>NCD Convention</th></tr></thead><tbody id="ws-rulebody"></tbody></table></div></section>' +
+      '<div class="card sec" style="overflow-x:auto"><table style="min-width:760px"><thead><tr><th>Rule</th><th>From → To</th><th>Who may act</th><th>Signature</th><th>MLETR</th><th>NCD Convention</th></tr></thead><tbody id="ws-rulebody"></tbody></table></div>' +
+      '<div class="card sec"><div class="row between"><h3 style="margin:0">Contract definition</h3><span class="sub" style="margin:0">Contract ID = SHA-256 of this definition. Change one character and the ID changes.</span></div><div class="hash sec" id="ws-cid" style="margin-top:8px"></div><div id="ws-canc" style="margin-top:6px"></div><pre id="ws-spec" style="margin:10px 0 0;max-height:260px;overflow:auto;background:#0f172a;color:#e2e8f0;border-radius:10px;padding:12px;font-size:11.5px;line-height:1.45"></pre></div>' +
+      '<div class="card sec" style="overflow-x:auto"><h3>Execution log</h3><table style="min-width:700px"><thead><tr><th>Time</th><th>Document</th><th>Rule</th><th>Step</th><th>Result</th><th>Evidence hash</th></tr></thead><tbody id="ws-exec"></tbody></table><p class="sub" style="margin:8px 0 0">Run an action in Shipments to see it here. Steps the contract does not allow are recorded as rejected.</p></div></section>' +
 
       '<section id="view-ws-verify" class="view-section ws"><h1>✅ Public verification</h1><p class="sub">For a bank, customs officer or court: no account needed. Drop an evidence package or type a document number. The file is hashed locally; nothing is uploaded.</p>' +
       '<div class="card"><div class="drop"><p style="margin:0 0 10px"><b>Drop or choose an evidence package (.json)</b></p><input type="file" id="ws-vfile" accept=".json,application/json"></div>' +
@@ -211,24 +213,72 @@
         '<div class="row sec"><span class="state">State: ' + pretty(s.state) + '</span><span class="sub" style="margin:0">Controlled by <b>' + esc(s.holder) + '</b> · title document ' + chip(s.tdoc, s.ebl) + '</span></div>' +
         '<div class="sec"><h3>Parties</h3><table><tbody>' + s.parties.map(function (p) { return '<tr><td style="width:38%;color:var(--muted)">' + esc(p[0]) + '</td><td><b>' + esc(p[1]) + '</b></td></tr>'; }).join('') + '</tbody></table></div>' +
         '<div class="sec"><h3>Documents · click for legal status</h3><div class="row">' + s.docs.map(function (d) { return chip(d[0], d[1]); }).join('') + '</div><div class="jurbox" id="ws-jurbox"></div></div>' +
-        '<div class="sec"><h3>Timeline</h3><ul class="tl">' + s.tl.slice().reverse().map(function (e) { return '<li><div class="h">' + esc(e[0]) + '</div><div class="m">' + esc(e[1]) + ' · ' + esc(e[2]) + '</div>' + (e[3] ? '<div class="hash">evidence sha-256 ' + e[3] + '</div>' : '') + '</li>'; }).join('') + '</ul></div>';
+        '<div class="sec"><h3>Timeline</h3><ul class="tl">' + s.tl.slice().reverse().map(function (e) { return '<li><div class="h">' + esc(e[0]) + '</div><div class="m">' + esc(e[1]) + ' · ' + esc(e[2]) + '</div>' + (e[3] ? '<div class="hash">evidence sha-256 ' + e[3] + '</div>' : '') + (e[4] ? '<div style="margin-top:4px">' + anchorHtml(e[4]) + '</div>' : '') + '</li>'; }).join('') + '</ul>' +
+        '<p class="sub" style="margin:4px 0 0">Run an action to create an evidence record, then anchor its fingerprint to Bitcoin. Only the hash is sent, never the document.</p></div>';
       qa('#ws-shipdetail .chip').forEach(function (c) { c.onclick = function () { showDoc(c.getAttribute('data-t'), c.getAttribute('data-no')); }; });
       var go = q('#ws-actgo'); if (go) go.onclick = runAction;
+      wireAnchors('#ws-shipdetail', renderShip);
     }
     function showDoc(t, no) {
       var box = q('#ws-jurbox'); box.style.display = 'block';
       box.innerHTML = '<div class="row between"><b>' + chip(t, no) + ' ' + esc(TYPE_NAME[t] || t) + '</b><span class="sub" style="margin:0">Illustrative · not legal advice</span></div><div class="row sec" style="margin-top:8px">' + jurBadges(t) + '</div><div id="ws-jurtxt" class="sub" style="margin:8px 0 0">Click a badge for the reasoning.</div>';
       qa('#ws-jurbox .jur').forEach(function (b) { b.onclick = function () { q('#ws-jurtxt').textContent = JMAP[b.getAttribute('data-k')][b.getAttribute('data-j')][2]; }; });
     }
+    var execLog = [];
+    function findRule(from, to) { for (var i = 0; i < RULES.length; i++) { if (RULES[i][0] === from && RULES[i][1] === to) return i; } return -1; }
     function runAction() {
       var s = shipments[cur], sel = q('#ws-act'), to = sel.value; if (!to) { toast('Choose an action first'); return; }
       var label = sel.options[sel.selectedIndex].textContent;
       var when = new Date().toISOString().slice(0, 16).replace('T', ' ');
-      var event = { shipment: s.id, document: s.ebl, from: s.state, to: to, actor: s.holder, at: when, signature: 'QES (simulated)' };
+      var ri = findRule(s.state, to);
+      if (ri < 0) { // the Smart Rulebook refuses transitions it does not define
+        execLog.push({ at: when, doc: s.ebl, rule: '—', step: pretty(s.state) + ' → ' + pretty(to), result: 'REJECTED', hash: '' });
+        toast('Blocked by Smart Rulebook: no rule allows this step'); return;
+      }
+      var event = { contract: contractId, rule: 'R' + (ri + 1), shipment: s.id, document: s.ebl, from: s.state, to: to, actor: s.holder, at: when, signature: RULES[ri][3] + ' (simulated)' };
       sha256(JSON.stringify(event)).then(function (h) {
         if (to === 'TRANSFERRED') s.holder = s.holder === 'Global Bank PLC' ? 'Global Imports LLC' : 'Global Bank PLC';
-        s.state = to; s.tl.push([label + ' · QES (simulated)', event.actor, when, h.slice(0, 32) + '…']);
-        return buildSamples().then(function () { registry[s.ebl].last = h; renderShipList(); renderShip(); toast('Recorded. Evidence hash ' + h.slice(0, 12) + '…'); });
+        s.state = to; s.tl.push([label + ' · rule R' + (ri + 1) + ' · ' + RULES[ri][3] + ' (simulated)', event.actor, when, h.slice(0, 32) + '…', h]);
+        execLog.push({ at: when, doc: s.ebl, rule: 'R' + (ri + 1), step: pretty(event.from) + ' → ' + pretty(to), result: 'EXECUTED', hash: h });
+        return buildSamples().then(function () { registry[s.ebl].last = h; renderShipList(); renderShip(); toast('Executed rule R' + (ri + 1) + '. Evidence hash ' + h.slice(0, 12) + '…'); });
+      });
+    }
+
+    // ---------------- Bitcoin anchoring via OpenTimestamps (real) ----------------
+    // Only the 32-byte SHA-256 digest leaves the browser. No document content, no party data.
+    var OTS_CALENDARS = ['https://a.pool.opentimestamps.org', 'https://alice.btc.calendar.opentimestamps.org'];
+    var OTS_MAGIC = [0x00, 0x4f, 0x70, 0x65, 0x6e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x73, 0x00, 0x00, 0x50, 0x72, 0x6f, 0x6f, 0x66, 0x00, 0xbf, 0x89, 0xe2, 0xe8, 0x84, 0xe8, 0x92, 0x94];
+    var anchors = {}; // hex digest -> {status, url, at}
+    function hexToBytes(h) { var a = new Uint8Array(h.length / 2); for (var i = 0; i < a.length; i++) a[i] = parseInt(h.substr(i * 2, 2), 16); return a; }
+    function anchor(hex, label) {
+      if (anchors[hex] && anchors[hex].status === 'submitted') return Promise.resolve(anchors[hex]);
+      anchors[hex] = { status: 'pending' };
+      var digest = hexToBytes(hex);
+      var calls = OTS_CALENDARS.map(function (u) {
+        return fetch(u + '/digest', { method: 'POST', headers: { 'Accept': 'application/vnd.opentimestamps.v1' }, body: digest })
+          .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.arrayBuffer(); })
+          .then(function (b) { return new Uint8Array(b); }, function () { return null; });
+      });
+      return Promise.all(calls).then(function (res) {
+        var ok = res.filter(function (x) { return x && x.length; });
+        if (!ok.length) { anchors[hex] = { status: 'failed' }; return anchors[hex]; }
+        var parts = [new Uint8Array(OTS_MAGIC), new Uint8Array([0x01, 0x08]), digest];
+        ok.forEach(function (r, i) { if (i < ok.length - 1) parts.push(new Uint8Array([0xff])); parts.push(r); });
+        var url = URL.createObjectURL(new Blob(parts, { type: 'application/octet-stream' }));
+        anchors[hex] = { status: 'submitted', url: url, n: ok.length, at: new Date().toISOString().slice(0, 16).replace('T', ' '), name: (label || hex.slice(0, 12)) + '.ots' };
+        return anchors[hex];
+      });
+    }
+    function anchorHtml(hex) {
+      var a = anchors[hex];
+      if (!a) return '<button class="btn ghost ws-anc" data-h="' + hex + '" style="padding:4px 8px;font-size:11px">⚓ Anchor to Bitcoin</button>';
+      if (a.status === 'pending') return '<span class="sub" style="margin:0">⏳ Sending to OpenTimestamps calendars…</span>';
+      if (a.status === 'failed') return '<span class="sub" style="margin:0;color:#b91c1c">Calendars unreachable; not anchored.</span> <button class="btn ghost ws-anc" data-h="' + hex + '" style="padding:4px 8px;font-size:11px">Retry</button>';
+      return '<span class="sub" style="margin:0;color:#065f46">⚓ Submitted to ' + a.n + ' Bitcoin calendar(s) · ' + a.at + ' · Bitcoin confirmation usually within hours.</span> <a class="btn ghost" style="padding:4px 8px;font-size:11px" href="' + a.url + '" download="' + esc(a.name) + '">⬇ .ots proof</a> <a href="https://opentimestamps.org" target="_blank" rel="noopener" style="font-size:11px">verify at opentimestamps.org</a>';
+    }
+    function wireAnchors(scope, rerender) {
+      qa(scope + ' .ws-anc').forEach(function (b) {
+        b.onclick = function () { var h = b.getAttribute('data-h'); anchors[h] = { status: 'pending' }; rerender(); anchor(h).then(function () { rerender(); }); };
       });
     }
 
@@ -267,8 +317,24 @@
       STATES.forEach(function (k) { var x = P[k][0], y = P[k][1], on = k === st; svg += '<rect x="' + x + '" y="' + y + '" width="' + W + '" height="' + H + '" rx="10" fill="' + (on ? '#0A2540' : '#fff') + '" stroke="' + (on ? '#0A2540' : '#cbd5e1') + '" stroke-width="1.5"/><text x="' + (x + W / 2) + '" y="' + (y + 27) + '" text-anchor="middle" font-size="12" font-weight="700" fill="' + (on ? '#fff' : '#0F172A') + '">' + pretty(k) + '</text>'; });
       svg += '<text x="20" y="30" font-size="12" fill="#64748B">Current state of the selected document is filled. Each arrow = one signed transition.</text></svg>';
       q('#ws-rulesvg').innerHTML = svg;
-      q('#ws-rulebody').innerHTML = RULES.map(function (r) { return '<tr' + (r[0] === st ? ' style="background:#f0f9ff"' : '') + '><td><b>' + pretty(r[0]) + '</b> → ' + pretty(r[1]) + '</td><td>' + esc(r[2]) + '</td><td>' + esc(r[3]) + '</td><td>' + esc(r[4]) + '</td><td>' + esc(r[5]) + '</td></tr>'; }).join('');
+      q('#ws-rulebody').innerHTML = RULES.map(function (r, i) { return '<tr' + (r[0] === st ? ' style="background:#f0f9ff"' : '') + '><td><b>R' + (i + 1) + '</b></td><td><b>' + pretty(r[0]) + '</b> → ' + pretty(r[1]) + '</td><td>' + esc(r[2]) + '</td><td>' + esc(r[3]) + '</td><td>' + esc(r[4]) + '</td><td>' + esc(r[5]) + '</td></tr>'; }).join('');
+      q('#ws-spec').textContent = contractSpec;
+      q('#ws-cid').textContent = 'contract id (sha-256) ' + (contractId || '…');
+      if (contractId) { q('#ws-canc').innerHTML = anchorHtml(contractId); wireAnchors('#ws-canc', renderRule); }
+      q('#ws-exec').innerHTML = execLog.length ? execLog.slice().reverse().map(function (e) {
+        return '<tr><td>' + e.at + '</td><td>' + esc(e.doc) + '</td><td><b>' + e.rule + '</b></td><td>' + esc(e.step) + '</td><td><span class="pill ' + (e.result === 'EXECUTED' ? 'p-done' : 'p-prog') + '">' + e.result + '</span></td><td class="hash">' + (e.hash ? e.hash.slice(0, 24) + '…' : '—') + '</td></tr>';
+      }).join('') : '<tr><td colspan="6" class="sub">No executions yet.</td></tr>';
     }
+    // machine-readable contract definition (its hash is the contract id)
+    var contractSpec = JSON.stringify({
+      contract: 'maresign.ebl-rulebook', version: '0.1.0', mode: 'simulation',
+      legalBasis: ['UNCITRAL MLETR', 'UN Convention on Negotiable Cargo Documents', 'Law No. 5070 (TR e-signature)', 'HMK m.205/2'],
+      states: STATES,
+      rules: RULES.map(function (r, i) { return { id: 'R' + (i + 1), from: r[0], to: r[1], actor: r[2], signature: r[3], mletr: r[4], ncd: r[5] }; }),
+      default: 'deny'
+    }, null, 2);
+    var contractId = '';
+    sha256(contractSpec).then(function (h) { contractId = h; });
 
     // ---------------- public verification ----------------
     var registry = {}, hashIndex = {}, urls = [];
@@ -293,6 +359,8 @@
       var f = e.target.files[0]; if (!f) return;
       f.text().then(function (txt) { return sha256(txt); }).then(function (h) {
         var rec = hashIndex[h];
+        var renderAnc = function () { var el = q('#ws-vanc'); if (el) { el.innerHTML = anchorHtml(h); wireAnchors('#ws-vanc', renderAnc); } };
+        setTimeout(function () { q('#ws-vres').insertAdjacentHTML('beforeend', '<div id="ws-vanc" style="margin-top:8px"></div>'); renderAnc(); }, 0);
         if (rec) showRes(true, '<b>✓ Match.</b> This package is identical to the registered record for <b>' + esc(rec.doc) + '</b> (' + esc(rec.shipment) + ').<div class="hash">sha-256 ' + h + '</div>');
         else showRes(false, '<b>✗ No match.</b> No registered package has this fingerprint. The file may have been altered, or it was never registered.<div class="hash">sha-256 ' + h + '</div>');
       });
