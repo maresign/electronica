@@ -237,3 +237,37 @@
     if (window.console) console.warn('[icons.js layout fix] disabled:', err);
   }
 })();
+
+/* ---- Phone header layout (27 Oct 2026): logo far left and 50% larger, menu button under the logo,
+ *      Verification button stacked above the role switcher. Applies below 768px only. ---- */
+(function () {
+  'use strict';
+  try {
+    if (window.__msPhoneHeader) return; window.__msPhoneHeader = true;
+    var css = '@media (max-width:767px){' +
+      '.ms-hd-left{flex-direction:column!important;align-items:flex-start!important;gap:2px!important}' +
+      '.ms-hd-left>button{order:2;margin-left:0!important;padding:6px 4px!important}' +
+      '.ms-hd-left>div{margin-left:0!important}' +
+      'header img[alt="Maresign"]{height:108px!important}' +
+      '.ms-hd-right{flex-direction:column!important;align-items:stretch!important;gap:8px!important}' +
+      '.ms-hd-right>*{flex:none!important;width:100%!important}' +
+      '.ms-hd-right>.w-px{display:none!important}' +
+      '.ms-hd-bar{align-items:flex-start!important}}';
+    var st = document.createElement('style'); st.id = 'ms-phone-header'; st.textContent = css; document.head.appendChild(st);
+    function tag() {
+      var burger = document.querySelector('header button[onclick="toggleSidebar()"]');
+      if (burger && burger.parentElement) {
+        burger.parentElement.classList.add('ms-hd-left');
+        var bar = burger.parentElement.parentElement; if (bar) bar.classList.add('ms-hd-bar');
+      }
+      var ver = document.querySelector('header button[onclick="openQRModal()"]');
+      if (ver && ver.parentElement) ver.parentElement.classList.add('ms-hd-right');
+      var sb = document.getElementById('sidebar'), h = document.querySelector('header');
+      if (sb && h && window.innerWidth < 1024) sb.style.paddingTop = (h.offsetHeight + 12) + 'px';
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tag); else tag();
+    window.addEventListener('load', tag);
+  } catch (err) {
+    if (window.console) console.warn('[icons.js phone header] disabled:', err);
+  }
+})();
