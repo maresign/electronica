@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>platform.maresign · Sesli tur / Guided tour</title>
+<meta name="description" content="A narrated tour of platform.maresign: electronic bills of lading, the Sovereign Bottleneck, the Smart Rulebook, Bitcoin anchoring and Watchkeeper. Turkish and English.">
+<style>
+:root{--navy:#0A2540;--ink:#0F172A;--muted:#64748B;--line:#E2E8F0;--accent:#00A3E0;--amber:#F59E0B;--green:#059669;--purple:#7C3AED;--red:#DC2626}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#06111f;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px}
+.stage{position:relative;width:min(100%,calc((100vh - 120px) * 16 / 9));aspect-ratio:16/9;background:linear-gradient(160deg,#0b1f38,#0A2540 55%,#0d2c4f);border-radius:18px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.scene{position:absolute;inset:0;padding:5% 6%;display:flex;flex-direction:column;opacity:0;transform:translateY(12px);transition:opacity .6s,transform .6s;pointer-events:none}
+.scene.on{opacity:1;transform:none;pointer-events:auto}
+.kicker{font-size:clamp(10px,1.3vw,14px);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1,h2{margin:.3em 0 .4em;line-height:1.15}
+h1{font-size:clamp(22px,4.2vw,52px)}
+h2{font-size:clamp(18px,3vw,38px)}
+.lead{font-size:clamp(12px,1.7vw,20px);color:#cbd5e1;max-width:62ch;line-height:1.45}
+.row{display:flex;gap:2.2%;flex-wrap:wrap;margin-top:auto;margin-bottom:auto}
+.card{flex:1 1 0;min-width:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:2.2%;font-size:clamp(10px,1.35vw,16px);color:#e2e8f0;line-height:1.4;opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s}
+.scene.on .card{opacity:1;transform:none}
+.scene.on .card:nth-child(2){transition-delay:.35s}.scene.on .card:nth-child(3){transition-delay:.7s}.scene.on .card:nth-child(4){transition-delay:1.05s}.scene.on .card:nth-child(5){transition-delay:1.4s}
+.card b{display:block;color:#fff;font-size:1.08em;margin-bottom:.3em}
+.ic{width:clamp(22px,3.2vw,40px);height:clamp(22px,3.2vw,40px);color:var(--accent);margin-bottom:.4em}
+.tag{display:inline-block;font-size:.8em;font-weight:700;border-radius:6px;padding:.15em .55em;margin:.15em .2em 0 0}
+.t-title{background:#ecfdf5;color:#065f46}.t-evid{background:#fffbeb;color:#92400e}.t-con{background:#eff6ff;color:#1e40af}.t-no{background:#fef2f2;color:#991b1b}
+.flow{display:flex;align-items:center;gap:1.5%;margin:auto 0;flex-wrap:nowrap}
+.flow .card{text-align:center}
+.arrow{color:var(--accent);font-size:clamp(14px,2.4vw,30px);opacity:.8}
+.big{font-size:clamp(28px,6vw,80px);font-weight:800;color:#fff}
+.hash{font-family:ui-monospace,Menlo,Consolas,monospace;color:#c4b5fd;font-size:clamp(9px,1.2vw,14px);word-break:break-all}
+.logo{width:clamp(70px,13vw,170px);border-radius:16px;margin-bottom:1%}
+.sim{display:inline-block;border:1px solid rgba(245,158,11,.5);color:#fbbf24;background:rgba(120,53,15,.35);border-radius:6px;font:700 clamp(9px,1.1vw,12px) ui-monospace,monospace;padding:.25em .6em;letter-spacing:.06em}
+.cap{position:absolute;left:0;right:0;bottom:0;padding:1.6% 4% 2%;background:linear-gradient(transparent,rgba(2,8,20,.92) 35%);font-size:clamp(11px,1.55vw,18px);line-height:1.4;color:#f8fafc;text-align:center;min-height:16%}
+.bar{position:absolute;left:0;top:0;height:4px;background:var(--accent);width:0;transition:width .4s}
+.ctrl{width:min(100%,calc((100vh - 120px) * 16 / 9));display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.ctrl button{background:#132c4a;color:#fff;border:1px solid #23466f;border-radius:10px;padding:9px 14px;font:600 14px system-ui;cursor:pointer}
+.ctrl button.on{background:#fff;color:var(--navy)}
+.ctrl .sp{flex:1}
+.dots{display:flex;gap:6px}
+.dots i{width:10px;height:10px;border-radius:50%;background:#23466f;cursor:pointer;display:block}
+.dots i.on{background:var(--accent)}
+.start{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(6,17,31,.82);z-index:5;text-align:center;padding:20px}
+.start button{background:#fff;color:var(--navy);border:0;border-radius:999px;padding:14px 26px;font:800 18px system-ui;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.start p{color:#94a3b8;font-size:13px;max-width:52ch;margin:0}
+.close{position:fixed;top:10px;right:12px;color:#94a3b8;text-decoration:none;font:600 14px system-ui}
+@media (max-width:640px) and (orientation:portrait){.stage{aspect-ratio:9/14;width:100%}.row,.flow{flex-direction:column;flex-wrap:nowrap;gap:8px}.arrow{transform:rotate(90deg)}.card{padding:10px}.ctrl{width:100%}}
+@media (prefers-reduced-motion:reduce){.scene,.card{transition:none}}
+</style>
+</head>
+<body>
+<a class="close" href="/" id="back">✕</a>
+<div class="wrap">
+  <div class="stage" id="stage">
+    <div class="bar" id="bar"></div>
+    <div id="scenes"></div>
+    <div class="cap" id="cap" aria-live="polite"></div>
+    <div class="start" id="start">
+      <img class="logo" src="maresign-yeni-logo.jpg" alt="Maresign">
+      <button id="go">▶ Turu başlat / Start tour</button>
+      <p id="startNote">~3 dk · sesli anlatım ve altyazı · Simülasyon platformu<br>~3 min · narrated with captions · Simulation platform</p>
+    </div>
+  </div>
+  <div class="ctrl">
+    <button id="prev" aria-label="Previous">◀</button>
+    <button id="play" aria-label="Play/Pause">❚❚</button>
+    <button id="next" aria-label="Next">▶</button>
+    <div class="dots" id="dots"></div>
+    <span class="sp"></span>
+    <button id="mute" aria-label="Sound">🔊</button>
+    <button data-l="tr" class="lang on">TR</button>
+    <button data-l="en" class="lang">EN</button>
+  </div>
+</div>
+<script>
+(function(){
+'use strict';
+var I = {
+  doc:'<path d="M14 3.5H6.5A1.5 1.5 0 0 0 5 5v14a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19V8.5z"/><path d="M14 3.5v5h5"/><path d="M8.5 12.5h7M8.5 16h5"/>',
+  ship:'<path d="M2.5 15.5h19l-2.6 4H5.1z"/><path d="M5 15.5v-3.5h3.5v3.5M8.5 15.5v-3.5H12v3.5M6.7 12V8.5h3.5V12"/><path d="M15 15.5V8h3.5v7.5"/><path d="M15.8 8V5.5h1.9V8"/>',
+  bank:'<path d="M3 9.5 12 4l9 5.5z"/><path d="M5 9.5v8M9.7 9.5v8M14.3 9.5v8M19 9.5v8"/><path d="M3 20h18M4 17.5h16"/>',
+  compass:'<circle cx="12" cy="12" r="9"/><path d="M12 3.8 13.6 10.4 20.2 12 13.6 13.6 12 20.2 10.4 13.6 3.8 12 10.4 10.4z"/>',
+  lighthouse:'<path d="M9 20.5 10 9h4l1 11.5z"/><path d="M9.6 7.2h4.8V9H9.6z"/><path d="M10.4 7.2V5.6L12 4.3l1.6 1.3v1.6"/><path d="M6 20.5h12"/><path d="M7.5 6.2 4 5.2M16.5 6.2l3.5-1"/>',
+  sextant:'<path d="M12 4 5 17.5M12 4l7 13.5"/><path d="M4.2 17.2a11 11 0 0 0 15.6 0"/><path d="M12 4l2.6 15"/><circle cx="12" cy="4" r="1.3"/>',
+  anchor:'<circle cx="12" cy="4.6" r="1.8"/><path d="M12 6.4v14.1"/><path d="M8 9.2h8"/><path d="M4.2 13.2c.4 4.3 3.7 7.3 7.8 7.3s7.4-3 7.8-7.3"/><path d="M2.8 14.8l1.4-1.6 1.7 1.3M21.2 14.8l-1.4-1.6-1.7 1.3"/>',
+  seal:'<path d="M12 2.8l2.1 1.6 2.6-.3 1 2.4 2.4 1-.3 2.6 1.6 2.1-1.6 2.1.3 2.6-2.4 1-1 2.4-2.6-.3L12 21.2l-2.1-1.6-2.6.3-1-2.4-2.4-1 .3-2.6L2.6 12l1.6-2.1-.3-2.6 2.4-1 1-2.4 2.6.3z"/><path d="M8.6 12.2l2.3 2.3 4.6-4.8"/>',
+  container:'<rect x="2.5" y="6" width="19" height="12" rx=".8"/><path d="M6 8.5v7M9 8.5v7M12 8.5v7M15 8.5v7M18 8.5v7"/>',
+  logbook:'<path d="M6 3.5h11.5v15H7.2A1.7 1.7 0 0 0 5.5 20.2V5a1.5 1.5 0 0 1 .5-1.5z"/><rect x="9.5" y="9.5" width="5" height="4" rx=".6"/><path d="M10.4 9.5V8.3a1.6 1.6 0 0 1 3.2 0v1.2"/>'
+};
+function ic(n){return '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+I[n]+'</svg>';}
+function card(icon,t,b){return '<div class="card">'+(icon?ic(icon):'')+'<b>'+t+'</b>'+b+'</div>';}
+
+var S = [
+ { // 1
+  tr:{k:'platform.maresign',h:'Bir konşimentonun dijital yolculuğu',l:'Üç dakikada platform turu. Simülasyon modunda çalışan bir Ar-Ge vitrini.',
+      say:'Merhaba. Bu kısa turda platform.maresign\'ı tanıtacağız. Bir konşimentonun dijital olarak nasıl düzenlendiğini, el değiştirdiğini ve yıllar sonra nasıl kanıtlandığını göreceksiniz. Platform simülasyon modunda çalışan bir Ar-Ge vitrinidir.'},
+  en:{k:'platform.maresign',h:'The digital voyage of a bill of lading',l:'A three-minute tour. An R&D showcase running in simulation mode.',
+      say:'Welcome. In this short tour we introduce platform dot maresign. You will see how a bill of lading is issued, transferred and proven years later, entirely in digital form. The platform is an R and D showcase running in simulation mode.'},
+  v:function(t){return '<img class="logo" src="maresign-yeni-logo.jpg" alt="Maresign"><div class="kicker">'+t.k+'</div><h1>'+t.h+'</h1><div class="lead">'+t.l+'</div><div style="margin-top:auto"><span class="sim">SIMULATION MODE</span></div>';}
+ },
+ { // 2
+  tr:{k:'Sorun',h:'Konşimento, yükün tapusudur',c:[['doc','Kâğıt','Yüzyıllardır kâğıt; kuryeyle ülkeden ülkeye taşınır.'],['ship','Gecikme','Gemi limana belgeden önce varır, yük bekler.'],['bank','Finans','Banka yükü bu belgeye dayanarak finanse eder.']],
+      say:'Konşimento, gemideki yükün tapusu gibidir. Kimin elindeyse yükü o teslim alır, banka da yükü bu belgeye dayanarak finanse eder. Yüzyıllardır kâğıttır, kuryeyle taşınır. Bu yüzden gecikir, kaybolur ve sahtesi yapılabilir.'},
+  en:{k:'The problem',h:'A bill of lading is the title deed of the cargo',c:[['doc','Paper','Paper for centuries, couriered from country to country.'],['ship','Delay','The ship often arrives before the paper; cargo waits.'],['bank','Finance','Banks finance the cargo against this document.']],
+      say:'A bill of lading works like the title deed of the cargo. Whoever holds it takes delivery, and banks finance the goods against it. For centuries it has been paper, carried by courier. So it gets delayed, lost, and sometimes forged.'},
+  v:function(t){return '<div class="kicker">'+t.k+'</div><h2>'+t.h+'</h2><div class="row">'+t.c.map(function(x){return card(x[0],x[1],x[2]);}).join('')+'</div>';}
+ },
+ { // 3
+  tr:{k:'Egemen Darboğaz',h:'Aynı belge, iki farklı hukuk',c:[['compass','İngiltere · Singapur · Fransa','Dijital konşimento kanunen kâğıtla eşit (MLETR, ETDA 2023).<br><span class="tag t-title">Mülkiyet belgesi</span>'],['anchor','Türkiye','TTK kâğıt esaslı; MLETR henüz yok. Nitelikli e-imzayla güçlü yazılı delil.<br><span class="tag t-evid">Delil</span>'],['container','Platform ağı','DCSA eki sözleşmedir; mahkemeyi, gümrüğü, taraf olmayan bankayı bağlamaz.<br><span class="tag t-con">Sözleşmesel</span>']],
+      say:'Dünyada bu belgeyi dijitalleştiren platformlar var ve bazı ülkeler dijital konşimentoyu kanunen kâğıtla eşit sayıyor. Türkiye henüz saymıyor. Yani yurt dışında dijital başlayan bir işlem Türkiye\'ye gelince hukuken zayıflıyor. Biz buna Egemen Darboğaz diyoruz.'},
+  en:{k:'The Sovereign Bottleneck',h:'One document, two different laws',c:[['compass','UK · Singapore · France','An electronic bill of lading equals paper by statute (MLETR, ETDA 2023).<br><span class="tag t-title">Document of title</span>'],['anchor','Türkiye','The Commercial Code assumes paper; MLETR not enacted. With a qualified e-signature: strong written evidence.<br><span class="tag t-evid">Evidence</span>'],['container','Platform networks','The DCSA Annex is a contract; it does not bind a court, customs or a non-party bank.<br><span class="tag t-con">Contractual</span>']],
+      say:'Platforms already digitise this document, and some countries treat an electronic bill of lading as equal to paper by law. Türkiye does not yet. So a transaction that starts digital abroad loses legal strength when it reaches Türkiye. We call this the Sovereign Bottleneck.'},
+  v:function(t){return '<div class="kicker">'+t.k+'</div><h2>'+t.h+'</h2><div class="row">'+t.c.map(function(x){return card(x[0],x[1],x[2]);}).join('')+'</div>';}
+ },
+ { // 4
+  tr:{k:'Maresign ne yapar',h:'Yeni bir platform değil, bir köprü',c:[['container','Mevcut platformlar','CargoX, WaveBL, Enigio, TradeGo, edoxOnline, eTEU…'],['seal','Maresign güven katmanı','Belgenin her ülkede ne sayıldığı + nitelikli e-imzalı, uzun süreli delil'],['bank','Türk mahkemesi, gümrük, banka','Uyuşmazlıkta ayakta kalan, bağımsız doğrulanabilir kanıt']],
+      say:'Maresign yeni bir eBL platformu kurmuyor. Mevcut platformlarla Türk hukuku arasında bir güven ve köprü katmanı tasarlıyor: belgenin her ülkede ne sayıldığını gösteriyor ve uyuşmazlıkta ayakta kalacak, nitelikli e-imzalı delili üretiyor.'},
+  en:{k:'What Maresign does',h:'Not another platform: a bridge',c:[['container','Existing platforms','CargoX, WaveBL, Enigio, TradeGo, edoxOnline, eTEU…'],['seal','Maresign trust layer','What the document counts as in each country + qualified-signed, long-term evidence'],['bank','Turkish court, customs, bank','Independently verifiable proof that stands up in a dispute']],
+      say:'Maresign is not building another eBL platform. It designs a trust and bridging layer between existing platforms and Turkish law: it shows what the document counts as in each country, and produces qualified-signed evidence that stands up in a dispute.'},
+  v:function(t){return '<div class="kicker">'+t.k+'</div><h2>'+t.h+'</h2><div class="flow">'+card(t.c[0][0],t.c[0][1],t.c[0][2])+'<span class="arrow">➜</span>'+card(t.c[1][0],t.c[1][1],t.c[1][2])+'<span class="arrow">➜</span>'+card(t.c[2][0],t.c[2][1],t.c[2][2])+'</div>';}
+ },
+ { // 5
+  tr:{k:'Roller ve sevkiyat',h:'Beş taraf, tek klasör',c:[['doc','İhracatçı','Belgeyi bankaya ciro eder'],['ship','Taşıyıcı','Konşimentoyu e-mühürle düzenler'],['container','Acente','Liman ve gümrük işleri'],['bank','Banka','Akreditifte teminat olarak tutar'],['anchor','Alıcı','Teslim ister, yükü alır']],
+      say:'Platformda beş rol var: ihracatçı, taşıyıcı, acente, banka ve alıcı. Her rol aynı belgeyi kendi gözüyle görür ve yalnızca kendi adımını atabilir. Sevkiyat klasöründe bir belgeye tıklayınca, o belgenin İngiltere\'de mülkiyet belgesi, Türkiye\'de ise delil olduğunu görürsünüz.'},
+  en:{k:'Roles and shipments',h:'Five parties, one folder',c:[['doc','Shipper','Endorses the bill to the bank'],['ship','Carrier','Issues the bill with an e-seal'],['container','Agent','Port and customs work'],['bank','Bank','Holds it as security under a letter of credit'],['anchor','Receiver','Requests delivery, takes the cargo']],
+      say:'There are five roles: shipper, carrier, agent, bank and receiver. Each sees the same document from its own side and can take only its own steps. In a shipment folder, click a document and you see that it is a document of title in the UK, but evidence in Türkiye.'},
+  v:function(t){return '<div class="kicker">'+t.k+'</div><h2>'+t.h+'</h2><div class="row">'+t.c.map(function(x){return card(x[0],x[1],x[2]);}).join('')+'</div>';}
+ },
+ { // 6
+  tr:{k:'Smart Rulebook',h:'Akıllı kontrat, ama izinli altyapıda',c:[['compass','11 kural','Düzenleme, devir, teslim, değişiklik, kâğıda dönüş, iptal'],['seal','Varsayılan: ret','Tanımsız adım reddedilir ve kaydedilir'],['logbook','Kontrat kimliği','Kuralların SHA-256 parmak izi; tek harf değişse kimlik değişir']],
+      say:'Platformun akıllı kontratına Smart Rulebook diyoruz. Konşimentonun yaşamı on bir kurala bağlı ve her kural MLETR, NCD Sözleşmesi ve İngiltere ETDA karşılığıyla gösteriliyor. Tanımlanmamış bir adım reddedilir. Kurallar herkese açık bir zincirde değil, izinli altyapıda çalışıyor, çünkü Türk mahkemesi için geçerli imza nitelikli e-imzadır.'},
+  en:{k:'Smart Rulebook',h:'A smart contract, on permissioned rails',c:[['compass','11 rules','Issue, transfer, delivery, amendment, switch to paper, void'],['seal','Default: deny','Any undefined step is refused and logged'],['logbook','Contract ID','SHA-256 fingerprint of the rules; change one letter and the ID changes']],
+      say:'We call the platform\'s smart contract the Smart Rulebook. The life of a bill of lading follows eleven rules, each mapped to MLETR, the NCD Convention and the UK Electronic Trade Documents Act. Any undefined step is refused. The rules run on permissioned infrastructure, not a public chain, because the signature a Turkish court recognises is the qualified electronic signature.'},
+  v:function(t){return '<div class="kicker">'+t.k+'</div><h2>'+t.h+'</h2><div class="row">'+t.c.map(function(x){return card(x[0],x[1],x[2]);}).join('')+'</div><div class="hash">DRAFT → ISSUED → TRANSFERRED → SURRENDER_REQUESTED → DELIVERED</div>';}
+ },
+ { // 7
+  tr:{k:'Delil ve Bitcoin çapası',h:'Belge değil, parmak izi zincirde',c:[['doc','1 · Parmak izi','Belgeden SHA-256 üretilir, tarayıcıda; dosya dışarı çıkmaz'],['anchor','2 · Çapa','Yalnızca parmak izi OpenTimestamps ile Bitcoin\'e yazılır'],['seal','3 · Makbuz','.ots dosyası: belge o tarihte vardı ve değişmedi']],
+      say:'Her adımın delili bir parmak izine dönüşür. İstenirse bu parmak izi Bitcoin\'e çapalanır; belgenin kendisi zincire çıkmaz. Böylece yıllar sonra herkes, Maresign\'a güvenmek zorunda kalmadan, belgenin o tarihte var olduğunu ve değişmediğini kanıtlayabilir. Kimin imzaladığını ise nitelikli e-imza kanıtlar.'},
+  en:{k:'Evidence and the Bitcoin anchor',h:'The fingerprint goes on-chain, not the document',c:[['doc','1 · Fingerprint','A SHA-256 hash is computed in the browser; the file never leaves'],['anchor','2 · Anchor','Only the hash is written to Bitcoin via OpenTimestamps'],['seal','3 · Receipt','The .ots file: the document existed then and has not changed']],
+      say:'The evidence of every step becomes a fingerprint. If you choose, that fingerprint is anchored to Bitcoin; the document itself never goes on-chain. Years later anyone can prove, without trusting Maresign, that the document existed at that time and has not changed. Who signed it is proven by the qualified electronic signature.'},
+  v:function(t){return '<div class="kicker">'+t.k+'</div><h2>'+t.h+'</h2><div class="flow">'+card(t.c[0][0],t.c[0][1],t.c[0][2])+'<span class="arrow">➜</span>'+card(t.c[1][0],t.c[1][1],t.c[1][2])+'<span class="arrow">➜</span>'+card(t.c[2][0],t.c[2][1],t.c[2][2])+'</div><div class="hash">sha-256 · 9f2c…e41a → OpenTimestamps → Bitcoin</div>';}
+ },
+ { // 8
+  tr:{k:'Herkese açık doğrulama',h:'Hesap açmadan kontrol',c:[['lighthouse','Public Verification','Gümrük, banka ya da mahkeme delil paketini yükler: eşleşme ya da eşleşme yok'],['sextant','Verification Lab','Başka platformların belgelerini bağımsız doğrular: TradeTrust, DCSA'],['seal','Kuantum sonrası','Klasik ECDSA ile ML-DSA-65 imzası birlikte: uzun ömürlü delil']],
+      say:'Bir gümrük memuru, bankacı ya da mahkeme, hesap açmadan delil paketini kontrol edebilir. Tek karakter değişmişse sonuç eşleşme yok olur. Doğrulama Laboratuvarı ise başka platformlarda düzenlenmiş belgeleri bağımsız olarak doğrular ve delil paketini klasik ve kuantum sonrası imzayla birlikte mühürler.'},
+  en:{k:'Public verification',h:'Check without an account',c:[['lighthouse','Public Verification','Customs, a bank or a court drops in the evidence package: match or no match'],['sextant','Verification Lab','Independently verifies documents from other platforms: TradeTrust, DCSA'],['seal','Post-quantum','Classical ECDSA and ML-DSA-65 together: long-lived evidence']],
+      say:'A customs officer, a banker or a court can check an evidence package without an account. If a single character has changed, the result is no match. The Verification Lab independently verifies documents issued on other platforms, and seals evidence with both a classical and a post-quantum signature.'},
+  v:function(t){return '<div class="kicker">'+t.k+'</div><h2>'+t.h+'</h2><div class="row">'+t.c.map(function(x){return card(x[0],x[1],x[2]);}).join('')+'</div>';}
+ },
+ { // 9
+  tr:{k:'Watchkeeper',h:'Vardiya zabiti: anlatır, karar vermez',c:[['anchor','Sorun, anlatsın','Ekranı, belgeyi ve hukuki durumu sade dille açıklar'],['compass','Yolu göstersin','Hangi adımı, hangi ekranda atacağınızı söyler'],['seal','Kaptanı çağırsın','İşlemi kendisi yapmaz; düğmeye siz basarsınız']],
+      say:'Sağ alttaki Watchkeeper, platformun vardiya zabitidir. Ekranları, belgeleri ve hukuki durumu Türkçe ya da İngilizce anlatır, hangi adımın hangi ekranda atılacağını gösterir. Ama karar vermez ve işlem yapmaz. Kuralı basit: kaptanı çağırır.'},
+  en:{k:'Watchkeeper',h:'Officer of the watch: explains, never decides',c:[['anchor','Ask it','Explains the screen, the document and the legal position in plain words'],['compass','It shows the way','Tells you which step, on which screen'],['seal','It calls the Master','It never acts itself; you press the button']],
+      say:'Watchkeeper, at the bottom right, is the platform\'s officer of the watch. It explains screens, documents and the legal position in Turkish or English, and shows which step to take on which screen. But it never decides and never acts. Its rule is simple: it calls the Master.'},
+  v:function(t){return '<div class="kicker">'+t.k+'</div><h2>'+t.h+'</h2><div class="row">'+t.c.map(function(x){return card(x[0],x[1],x[2]);}).join('')+'</div>';}
+ },
+ { // 10
+  tr:{k:'Dürüst ayrım',h:'Ne gerçek, ne simülasyon',c:[['seal','Gerçek','Parmak izi hesabı · Verification Lab · Smart Rulebook kural denetimi · Bitcoin çapası'],['doc','Simülasyon','Şirketler, gemiler, tutarlar · nitelikli imza adımları · delil defteri · hukuki rozetler'],['compass','Sırada','Bilişim Vadisi Ar-Ge projesi: gerçek ArkSigner imzası, gerçek delil defteri, armatör ve acente pilotları']],
+      say:'Ayrımı açıkça söyleyelim. Parmak izi hesabı, Doğrulama Laboratuvarı, kural denetimi ve Bitcoin çapası gerçek çalışıyor. Şirketler, gemiler ve imza adımları ise örnek. Sırada, Bilişim Vadisi Ar-Ge projesiyle gerçek nitelikli imza, gerçek delil defteri ve armatör ile acente pilotları var.'},
+  en:{k:'Honest split',h:'What is real, what is simulated',c:[['seal','Real','Fingerprinting · Verification Lab · Smart Rulebook enforcement · Bitcoin anchoring'],['doc','Simulated','Companies, ships, amounts · qualified signature steps · evidence ledger · legal badges'],['compass','Next','Bilişim Vadisi R&D project: real ArkSigner signatures, a real evidence ledger, shipowner and agency pilots']],
+      say:'Let us be clear about the split. Fingerprinting, the Verification Lab, rule enforcement and Bitcoin anchoring are real. Companies, ships and signature steps are samples. Next, through the Bilişim Vadisi R and D project: real qualified signatures, a real evidence ledger, and pilots with shipowners and agencies.'},
+  v:function(t){return '<div class="kicker">'+t.k+'</div><h2>'+t.h+'</h2><div class="row">'+t.c.map(function(x){return card(x[0],x[1],x[2]);}).join('')+'</div>';}
+ },
+ { // 11
+  tr:{k:'Teşekkürler',h:'Platformu kendiniz gezin',l:'Sevkiyat klasörünü açın, Smart Rulebook\'ta bir adım deneyin, Watchkeeper\'a sorun.<br><br>maresign.com · digital@maresign.com',
+      say:'Turumuz bu kadar. Şimdi platformu kendiniz gezebilirsiniz: bir sevkiyat klasörü açın, Smart Rulebook\'ta bir adım deneyin ya da Watchkeeper\'a sorun. Sorularınız için maresign nokta com. İyi seyirler.'},
+  en:{k:'Thank you',h:'Now explore it yourself',l:'Open a shipment folder, try a step in the Smart Rulebook, ask Watchkeeper.<br><br>maresign.com · digital@maresign.com',
+      say:'That is the end of our tour. Now explore the platform yourself: open a shipment folder, try a step in the Smart Rulebook, or ask Watchkeeper. For questions, visit maresign dot com. Fair winds.'},
+  v:function(t){return '<img class="logo" src="maresign-yeni-logo.jpg" alt="Maresign"><div class="kicker">'+t.k+'</div><h1>'+t.h+'</h1><div class="lead">'+t.l+'</div><div style="margin-top:auto"><a href="/" style="display:inline-block;background:#fff;color:#0A2540;border-radius:999px;padding:.6em 1.2em;font-weight:800;text-decoration:none">'+(t===S[10].tr?'Platforma dön →':'Back to the platform →')+'</a></div>';}
+ }
+];
+
+var lang = (navigator.language||'').toLowerCase().indexOf('tr')===0 ? 'tr' : 'en';
+try { var q = new URLSearchParams(location.search).get('lang'); if (q==='tr'||q==='en') lang=q; } catch(e){}
+var cur = 0, playing = false, muted = false, timer = null, token = 0;
+var $ = function(id){return document.getElementById(id);};
+var synth = window.speechSynthesis || null;
+
+function voiceFor(l){
+  if(!synth) return null;
+  var vs = synth.getVoices(), want = l==='tr' ? 'tr' : 'en';
+  var list = vs.filter(function(v){return v.lang && v.lang.toLowerCase().indexOf(want)===0;});
+  if(!list.length) return null;
+  var pref = list.filter(function(v){return /natural|neural|online|google|premium|enhanced/i.test(v.name);});
+  if(want==='en'){ var gb = (pref.length?pref:list).filter(function(v){return /en-gb/i.test(v.lang);}); if(gb.length) return gb[0]; }
+  return (pref[0]||list[0]);
+}
+function render(){
+  $('scenes').innerHTML = S.map(function(s,i){return '<section class="scene'+(i===cur?' on':'')+'" aria-hidden="'+(i!==cur)+'">'+s.v(s[lang])+'</section>';}).join('');
+  $('dots').innerHTML = S.map(function(_,i){return '<i class="'+(i===cur?'on':'')+'" data-i="'+i+'" title="'+(i+1)+'"></i>';}).join('');
+  $('bar').style.width = ((cur+1)/S.length*100)+'%';
+  $('cap').textContent = S[cur][lang].say;
+  document.documentElement.lang = lang;
+  Array.prototype.forEach.call(document.querySelectorAll('.lang'),function(b){b.classList.toggle('on',b.getAttribute('data-l')===lang);});
+  $('play').textContent = playing ? '❚❚' : '▶';
+  $('mute').textContent = muted ? '🔇' : '🔊';
+  $('back').title = lang==='tr' ? 'Platforma dön' : 'Back to the platform';
+}
+function stopAll(){ token++; clearTimeout(timer); if(synth) synth.cancel(); }
+function speakScene(){
+  stopAll(); var my = token; var text = S[cur][lang].say;
+  var advance = function(){ if(my!==token||!playing) return; timer = setTimeout(function(){ if(my!==token) return; if(cur<S.length-1){cur++;render();speakScene();} else {playing=false;render();} }, 900); };
+  var v = muted ? null : voiceFor(lang);
+  if(!v || !synth){ timer = setTimeout(advance, Math.max(5000, text.length*62)); return; }
+  var parts = text.match(/[^.!?]+[.!?]*/g) || [text], i = 0;
+  var next = function(){
+    if(my!==token) return;
+    if(i>=parts.length){ advance(); return; }
+    var u = new SpeechSynthesisUtterance(parts[i++].trim()); u.voice = v; u.lang = v.lang; u.rate = lang==='tr' ? 0.98 : 1.0; u.pitch = 1;
+    u.onend = next; u.onerror = next; synth.speak(u);
+  };
+  next();
+}
+function go(i){ cur = Math.max(0,Math.min(S.length-1,i)); render(); if(playing) speakScene(); else stopAll(); }
+$('go').onclick = function(){ $('start').style.display='none'; playing = true; render(); speakScene(); };
+$('play').onclick = function(){ playing = !playing; render(); if(playing) speakScene(); else stopAll(); };
+$('prev').onclick = function(){ go(cur-1); };
+$('next').onclick = function(){ go(cur+1); };
+$('mute').onclick = function(){ muted = !muted; render(); if(playing) speakScene(); };
+$('dots').onclick = function(e){ var i = e.target.getAttribute('data-i'); if(i!==null) go(+i); };
+Array.prototype.forEach.call(document.querySelectorAll('.lang'),function(b){ b.onclick = function(){ lang = b.getAttribute('data-l'); render(); if(playing) speakScene(); }; });
+document.addEventListener('keydown',function(e){ if(e.key==='ArrowRight') go(cur+1); else if(e.key==='ArrowLeft') go(cur-1); else if(e.key===' '){ e.preventDefault(); $('play').click(); } });
+document.addEventListener('visibilitychange',function(){ if(document.hidden && playing){ playing=false; stopAll(); render(); } });
+if(synth && synth.onvoiceschanged!==undefined) synth.onvoiceschanged = function(){};
+render();
+})();
+</script>
+</body>
+</html>
