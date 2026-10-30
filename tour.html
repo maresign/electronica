@@ -70,8 +70,6 @@ h2{font-size:clamp(18px,3vw,38px)}
     <div class="dots" id="dots"></div>
     <span class="sp"></span>
     <button id="mute" aria-label="Sound">🔊</button>
-    <button data-l="en" class="lang on">EN</button>
-    <button data-l="tr" class="lang">TR</button>
   </div>
 </div>
 <script>
@@ -172,8 +170,7 @@ var S = [
  }
 ];
 
-var lang = 'en'; // English by default, like the platform UI; Turkish via the TR button or ?lang=tr
-try { var q = new URLSearchParams(location.search).get('lang'); if (q==='tr'||q==='en') lang=q; } catch(e){}
+var lang = 'en'; // English only (Turkish version withdrawn, 30 Oct 2026)
 var cur = 0, playing = false, muted = false, timer = null, token = 0;
 var $ = function(id){return document.getElementById(id);};
 var synth = window.speechSynthesis || null;
