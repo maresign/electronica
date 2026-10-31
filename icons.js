@@ -292,3 +292,113 @@
     if (window.console) console.warn('[icons.js tour link] disabled:', err);
   }
 })();
+
+/* ---- Verification Lab: "Download report (PDF)" next to the JSON report button (31 Oct 2026) ----
+ * Takes the same Equivalence Report the JSON button produces and lays it out as a PDF in the browser.
+ * pdfmake (cdnjs) is loaded only on first click. Nothing is uploaded. */
+(function () {
+  'use strict';
+  try {
+    if (window.__msReportPdf) return; window.__msReportPdf = true;
+    var CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/';
+    function load(src) { return new Promise(function (res, rej) { var s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = function () { rej(new Error('load ' + src)); }; document.head.appendChild(s); }); }
+    function lib() { return window.pdfMake && window.pdfMake.vfs ? Promise.resolve() : load(CDN + 'pdfmake.min.js').then(function () { return load(CDN + 'vfs_fonts.js'); }); }
+
+    // Ask the Lab for its current report by clicking the JSON button while catching the file it creates.
+    function grabReport() {
+      var btn = document.getElementById('lab-btn-report'); if (!btn) return Promise.resolve(null);
+      var oc = URL.createObjectURL, ac = HTMLAnchorElement.prototype.click, blob = null;
+      URL.createObjectURL = function (b) { blob = b; return 'blob:ms-capture'; };
+      HTMLAnchorElement.prototype.click = function () {};
+      try { btn.click(); } finally { URL.createObjectURL = oc; HTMLAnchorElement.prototype.click = ac; }
+      return blob ? blob.text().then(function (t) { return { json: t, data: JSON.parse(t) }; }) : Promise.resolve(null);
+    }
+    function sha256(t) { return crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function (b) { return Array.prototype.map.call(new Uint8Array(b), function (x) { return x.toString(16).padStart(2, '0'); }).join(''); }); }
+    function short(v, n) { var s = typeof v === 'string' ? v : JSON.stringify(v); s = s == null ? '' : String(s); return s.length > (n || 140) ? s.slice(0, (n || 140) - 1) + '…' : s; }
+    function human(k) { return String(k).replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ').replace(/^./, function (c) { return c.toUpperCase(); }); }
+
+    var NAVY = '#0A2540', MUTED = '#64748B', LINE = '#E2E8F0';
+    function kv(rows) {
+      return { table: { widths: [120, '*'], body: rows.filter(function (r) { return r[1] !== undefined && r[1] !== null && r[1] !== ''; }).map(function (r) { return [{ text: r[0], color: MUTED }, { text: String(r[1]), style: r[2] || 'v' }]; }) }, layout: { hLineColor: LINE, vLineColor: LINE, hLineWidth: function () { return .5; }, vLineWidth: function () { return 0; }, paddingTop: function () { return 3; }, paddingBottom: function () { return 3; } }, margin: [0, 0, 0, 10] };
+    }
+    function grid(head, rows, widths) {
+      return { table: { headerRows: 1, widths: widths, body: [head.map(function (h) { return { text: h, style: 'th' }; })].concat(rows) }, layout: { fillColor: function (i) { return i === 0 ? '#F1F5F9' : null; }, hLineColor: LINE, vLineColor: LINE, hLineWidth: function () { return .5; }, vLineWidth: function () { return .5; } }, margin: [0, 0, 0, 10] };
+    }
+
+    function build(r, json, hash) {
+      var ind = r.indication || 'UNKNOWN';
+      var col = /PASSED/.test(ind) ? '#047857' : /FAILED/.test(ind) ? '#B91C1C' : '#B45309';
+      var c = [];
+      c.push({ columns: [{ stack: [{ text: 'MARESIGN · MARITIME TRUST GATEWAY', style: 'kicker' }, { text: 'Equivalence Report', style: 'h1' }, { text: (r.documentType || '').replace(/_/g, ' ') + ' · verified without the issuing platform’s software', color: MUTED, fontSize: 9 }] },
+        { width: 150, table: { widths: ['*'], body: [[{ text: [{ text: ind + '\n', bold: true, fontSize: 13, color: '#fff' }, { text: r.subIndication ? String(r.subIndication) : 'Indication', fontSize: 8, color: '#fff' }], fillColor: col, alignment: 'center', margin: [4, 8, 4, 8] }]] }, layout: 'noBorders' }] , margin: [0, 0, 0, 14] });
+      c.push({ text: 'Report', style: 'h2' });
+      c.push(kv([
+        ['Report type', (r.reportType || '') + (r.version ? ' v' + r.version : '')],
+        ['Engine', r.engine], ['Policy', r.policyId], ['Policy hash', r.policyHash, 'mono'],
+        ['Validation time', r.validationTime], ['Document type', r.documentType],
+        ['Document digest', r.documentDigest ? (r.documentDigest.alg + '  ' + r.documentDigest.value) : '', 'mono'],
+        ['Trust sources used', (r.trustSourcesUsed || []).join(', ')],
+        ['Processing time', r.timingMs != null ? r.timingMs + ' ms' : '']
+      ]));
+      var s = r.summary || {};
+      c.push({ text: 'Summary', style: 'h2' });
+      var sumRows = [];
+      if (s.issuer) sumRows.push(['Issuer', s.issuer]);
+      if (s.currentHolder) sumRows.push(['Identified holder', s.currentHolder, 'b']);
+      if (s.entries != null) sumRows.push(['Chain entries', s.entries]);
+      if (s.issuers) s.issuers.forEach(function (i, n) { sumRows.push(['Issuer ' + (n + 1), [i.name, i.type, i.location].filter(Boolean).join(' · ')]); if (i.tokenRegistry) sumRows.push(['Token registry', i.tokenRegistry, 'mono']); });
+      if (s.documentData) Object.keys(s.documentData).forEach(function (k) { var v = s.documentData[k]; if (k.charAt(0) === '$' || k === 'issuers') return; if (v === null || typeof v !== 'object') sumRows.push([human(k), v]); });
+      Object.keys(s).forEach(function (k) { if (['issuer', 'currentHolder', 'entries', 'issuers', 'documentData', 'transactions'].indexOf(k) < 0 && (s[k] === null || typeof s[k] !== 'object')) sumRows.push([human(k), s[k]]); });
+      if (sumRows.length) c.push(kv(sumRows));
+      if (s.transactions && s.transactions.length) {
+        c.push({ text: 'Transfer chain', style: 'h3' });
+        c.push(grid(['#', 'Action', 'From', 'To', 'Time (UTC)'], s.transactions.map(function (t) {
+          return [String(t.entry), { text: t.action || '', bold: true }, t.actor || '', { text: [t.recipient || '', t.note ? { text: '\n' + t.note, color: MUTED, fontSize: 7.5 } : ''] }, (t.timestamp || '').replace('T', ' ').replace('Z', '')];
+        }), [16, 80, '*', '*', 78]));
+      }
+      c.push({ text: 'Checks', style: 'h2' });
+      c.push(grid(['Check', 'Result', 'Details'], (r.checks || []).map(function (k) {
+        var det = Object.keys(k).filter(function (x) { return ['check', 'passed'].indexOf(x) < 0; }).map(function (x) {
+          var v = k[x]; if (x === 'keyTrust' && v && typeof v === 'object') v = [v.source, v.status, (v.lists || []).join(',')].filter(Boolean).join(' · ');
+          return { text: [{ text: human(x) + ': ', color: MUTED }, short(v, 120) + '\n'] };
+        });
+        return [{ text: k.check || '', fontSize: 8, bold: true }, { text: k.passed ? 'PASS' : 'FAIL', bold: true, color: k.passed ? '#047857' : '#B91C1C', alignment: 'center' }, { stack: det, fontSize: 7.5 }];
+      }), [120, 36, '*']));
+      c.push({ text: 'Integrity of this report', style: 'h2' });
+      c.push({ text: [{ text: 'SHA-256 of the JSON report: ', color: MUTED }, { text: hash, style: 'mono' }, '\nThe matching JSON can be downloaded with “Download report”. Recomputing its SHA-256 must give the value above.'], fontSize: 8.5, margin: [0, 0, 0, 10] });
+      c.push({ text: 'Limits: TRL 3 experiment in the browser. Sample documents and platforms are fictional; the trust list is a demo root; timestamps are local-clock statements. This report describes cryptographic and policy checks; it is not a legal opinion on the document’s status under any national law.', fontSize: 7.5, color: MUTED });
+      return {
+        pageSize: 'A4', pageMargins: [40, 54, 40, 50],
+        info: { title: 'Equivalence Report · ' + (r.documentType || ''), author: 'platform.maresign.com · Maresign', subject: 'MTG Equivalence Report', creator: 'mtg-verify (in-browser)' },
+        header: function () { return { columns: [{ text: 'platform.maresign · Verification Lab', bold: true }, { text: 'Generated ' + new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC', alignment: 'right' }], margin: [40, 22, 40, 0], fontSize: 7.5, color: MUTED }; },
+        footer: function (p, n) { return { columns: [{ text: 'Maresign Dijital Güven Teknolojileri · maresign.com · Simulation / R&D, not legal advice' }, { text: p + ' / ' + n, alignment: 'right' }], margin: [40, 16, 40, 0], fontSize: 7, color: MUTED }; },
+        content: c,
+        styles: { kicker: { fontSize: 8, bold: true, color: '#00A3E0' }, h1: { fontSize: 20, bold: true, color: NAVY, margin: [0, 2, 0, 2] }, h2: { fontSize: 12, bold: true, color: NAVY, margin: [0, 6, 0, 5] }, h3: { fontSize: 10, bold: true, color: NAVY, margin: [0, 2, 0, 4] }, th: { bold: true, fontSize: 8, color: NAVY }, v: { fontSize: 8.5 }, b: { fontSize: 8.5, bold: true }, mono: { fontSize: 7.5, color: '#5B21B6' } },
+        defaultStyle: { font: 'Roboto', fontSize: 8.5, lineHeight: 1.15 }
+      };
+    }
+
+    function onClick(btn) {
+      var label = btn.innerHTML; btn.disabled = true; btn.textContent = '…';
+      grabReport().then(function (got) {
+        if (!got) { alert('Run a case or drop a document first; then the report can be downloaded.'); return; }
+        return Promise.all([lib(), sha256(got.json)]).then(function (x) {
+          var r = got.data, name = 'mtg-equivalence-report-' + String(r.documentType || 'doc').toLowerCase() + '-' + (r.validationTime || new Date().toISOString()).slice(0, 10) + '.pdf';
+          window.pdfMake.createPdf(build(r, got.json, x[1])).download(name);
+        });
+      }).catch(function (e) { alert('PDF could not be created: ' + e.message); })
+        .then(function () { btn.disabled = false; btn.innerHTML = label; });
+    }
+    function add() {
+      var ref = document.getElementById('lab-btn-report'); if (!ref || document.getElementById('lab-btn-pdf')) return;
+      var b = document.createElement('button'); b.id = 'lab-btn-pdf'; b.type = 'button'; b.className = ref.className;
+      b.innerHTML = '⬇ Download report (PDF)'; b.title = 'Equivalence report as a PDF, with the SHA-256 of the JSON report';
+      b.addEventListener('click', function () { onClick(b); });
+      ref.parentNode.insertBefore(b, ref.nextSibling);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', add); else add();
+    window.addEventListener('load', add); setTimeout(add, 1500);
+  } catch (err) {
+    if (window.console) console.warn('[icons.js report pdf] disabled:', err);
+  }
+})();
