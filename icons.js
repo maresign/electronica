@@ -383,7 +383,7 @@
       grabReport().then(function (got) {
         if (!got) { alert('Run a case or drop a document first; then the report can be downloaded.'); return; }
         return Promise.all([lib(), sha256(got.json)]).then(function (x) {
-          var r = got.data, name = 'mtg-equivalence-report-' + String(r.documentType || 'doc').toLowerCase() + '-' + (r.validationTime || new Date().toISOString()).slice(0, 10) + '.pdf';
+          var r = JSON.parse(got.json.replace(/\u2192/g, '->')) /* Roboto has no arrow glyph */, name = 'mtg-equivalence-report-' + String(r.documentType || 'doc').toLowerCase() + '-' + (r.validationTime || new Date().toISOString()).slice(0, 10) + '.pdf';
           window.pdfMake.createPdf(build(r, got.json, x[1])).download(name);
         });
       }).catch(function (e) { alert('PDF could not be created: ' + e.message); })
